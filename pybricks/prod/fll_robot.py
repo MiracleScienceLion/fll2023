@@ -45,10 +45,10 @@ def main():
     bot = Robot(
         left_wheel_port=Port.A,
         right_wheel_port=Port.B,
-        left_sensor_port=Port.E,
-        right_sensor_port=Port.F,
         left_motor_port=Port.C,
         right_motor_port=Port.D,
+        left_sensor_port=Port.E,
+        right_sensor_port=Port.F,
     )
 
 
