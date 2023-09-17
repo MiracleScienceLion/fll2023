@@ -23,6 +23,7 @@ class Robot:
     ):
         self.left_wheel = Motor(left_wheel_port, Direction.COUNTERCLOCKWISE)
         self.right_wheel = Motor(right_wheel_port, Direction.CLOCKWISE)
+        self.axle_track = axle_track
         self.motor_pair = GyroDriveBase(
             left_motor=self.left_wheel,
             right_motor=self.right_wheel,
