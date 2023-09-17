@@ -6,8 +6,13 @@ from lib_move import move
 from lib_line_follow import line_follow
 
 def run(bot: Robot):
-    print("mission_04_masterpiece")
-
+    wheels = bot.motor_pair
+    wheels.straight(510)
+    wheels.curve(0,-69.49)
+    wheels.straight(850)
+    wheels.straight(-830)
+    wheels.curve(0,69.49)
+    wheels.straight(-510)
 def main():
     bot = Robot()
     run(bot)
