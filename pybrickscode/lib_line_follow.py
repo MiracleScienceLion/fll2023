@@ -26,13 +26,9 @@ def gain(signal):
 def line_follow(robot: Robot, distance=None, time=None, condition=None):
     wheels = robot.motor_pair
     eyel = robot.left_sensor
-    eyer = robot.right_sensor
-    eyer.detectable_colors([Color.BLACK, Color.WHITE])
-    eyel.detectable_colors([Color.BLACK, Color.WHITE])
-
     def should_contin(robot):
         if distance is not None:
-            return robot.motor_pair.distance() < distance
+            return wheels.distance() < distance
         if time is not None:
             return clock.time() < time
         if condition is not None:
@@ -47,8 +43,7 @@ def line_follow(robot: Robot, distance=None, time=None, condition=None):
 
 
 def should_continue(bot: Robot):
-    ri = bot.left_sensor
-    print(ri.color())
+    ri = bot.right_sensor
     return ri.color() != Color.BLACK
 
 
