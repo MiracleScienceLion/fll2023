@@ -108,9 +108,8 @@ if __name__ == "__main__":
     def roudtrip():
         heading = polygon(0, [[0, 940], [500, 940], [800, 250], [850, 150]], bot)
         heading = polygon(heading, [[850, 150], [800, 250]], bot, motion_type=-1)
-        heading = polygon(heading, [[800, 250], [700, -200]], bot)
-        heading = polygon(heading, [[700, -200], [200, -200], [500, 940]], bot)
-        heading = polygon(heading, [[500, 940], [0, 940]], bot, motion_type=-1)
+        heading = polygon(heading, [[800, 250], [700, -200], [200, -200], [100, 940]], bot)
+        heading = polygon(heading, [[100, 940], [0, 940]], bot, motion_type=-1)
 
 
     # tests()
