@@ -1,5 +1,5 @@
 from pybricks.hubs import PrimeHub
-from pybricks.parameters import Direction, Port, Stop
+from pybricks.parameters import Direction, Port, Stop, Color
 from pybricks.pupdevices import Motor, ColorSensor
 from pybricks.robotics import GyroDriveBase
 from pybricks.tools import wait
@@ -64,6 +64,18 @@ class Robot:
 
     def drive(self, speed, turn_rate) -> None:
         self.motor_pair.drive(speed, turn_rate)
+
+    def left_color(self) -> Color:
+        return self.left_sensor.color()
+
+    def right_color(self) -> Color:
+        return self.right_sensor.color()
+
+    def left_reflection(self) -> int:
+        return self.left_sensor.reflection()
+
+    def right_reflection(self) -> int:
+        return self.right_sensor.reflection()
 
 
 def main():
