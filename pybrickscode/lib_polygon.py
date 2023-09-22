@@ -20,8 +20,8 @@ def trip_plan(vertices, heading=0, motion_type=1):
     Given a polygon vertices and initial heading, generate the trip plan (a sequence of maneuvers)
     :param vertices: the ordered vertices of the polygon, as a list of 2d coordinates, such as [(x1, y1), (x2, y2) ...], with the starting position as the first element
     :param heading: starting heading direction (deg), follow pybricks orientation convention
-    :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, freeze = 0 (turn only with no straight motion)
-    when motion_typ = 0 (freeze) turn angle is aimed at aligning the front of robot to the designated direction
+    :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, pivot = 0 (turn only with no straight motion)
+    when motion_typ = 0 (pivot) turn angle is aimed at aligning the front of robot to the designated direction
     :return: the maneuver sequence, e.g. [(turn_angle, distance, heading), ...]
     """
     maneuvers = []
@@ -37,8 +37,8 @@ def route(point1, point2, heading=0, motion_type=1):
     :param point1: starting point
     :param point2: ending point
     :param heading: starting heading direction (deg), follow pybricks orientation convention
-    :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, freeze = 0 (turn only with no straight motion)
-    when motion_typ = 0 (freeze) turn angle is aimed at aligning the front of robot to the designated direction
+    :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, pivot = 0 (turn only with no straight motion)
+    when motion_typ = 0 (pivot) turn angle is aimed at aligning the front of robot to the designated direction
     :return: a tuple of (turn angle, straight distance, ending orientation)
     """
     displacement = [point2[0] - point1[0], point2[1] - point1[1]]
@@ -61,7 +61,7 @@ def polygon(heading, vertices, robot: Robot, motion_type: int = 1, reverse: bool
     :param heading: initial heading direction (deg), follow pybricks orientation convention
     :param vertices: the ordered vertices of the polygon, as a list of 2d coordinates, such as [(x1, y1), (x2, y2) ...], with the starting position as the first element
     :param robot: the robot
-    :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, freeze = 0 (turn only with no straight motion)
+    :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, pivot = 0 (turn only with no straight motion)
     :param reverse: if True, reverse course to undo all motions and retrack all the vertices back to the origin
     :return: final heading (deg), follow pybricks orientation convention
     """
