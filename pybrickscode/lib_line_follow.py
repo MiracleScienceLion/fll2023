@@ -25,12 +25,19 @@ def gain(signal):
     return speed + diff, speed - diff
 
 
-def line_follow(robot: Robot, distance=None, time=None, condition=None):
+def line_follow(robot: Robot, distance=None, time=None, condition=None, sensor="right"):
+    f"""
+    the func tion follows the black line
+    :param robot: robot base instance
+    :param distance: the distance limits the distance
+    :param time: the time limits the time 
+    :param condition:  is a custom condition callback function
+    :param sensor: can only be "left" or "right" (default) it specifies the sensors to be used
+    :return:
+    """
     wheels = robot.motor_pair
-    eyel = robot.left_sensor
-    eyer = robot.right_sensor
-    eyer.detectable_colors([Color.BLACK, Color.WHITE])
-    eyel.detectable_colors([Color.BLACK, Color.WHITE])
+    eye = robot.left_sensor if sensor == "left" else robot.right_sensor
+    eye.detectable_colors([Color.BLACK, Color.WHITE])
 
     def should_contin(robot):
         if distance is not None:
@@ -47,7 +54,7 @@ def line_follow(robot: Robot, distance=None, time=None, condition=None):
             return condition(robot)
 
     while should_contin(robot):
-        signal = eyel.reflection()
+        signal = eye.reflection()
         lspeed, rspeed = gain(signal)
         start_tank(robot, lspeed, rspeed)
     wheels.stop()
@@ -66,7 +73,7 @@ def main():
     eyer = bot.right_sensor
     eyer.detectable_colors([Color.BLACK, Color.WHITE])
     eyel.detectable_colors([Color.BLACK, Color.WHITE])
-    line_follow(bot, distance=300)
+    line_follow(bot, distance=300, sensor="left")
 
 
 if __name__ == "__main__":
