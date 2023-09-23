@@ -52,9 +52,12 @@ class Robot:
         self.left_wheel.brake()
         self.right_wheel.brake()
 
-    def straight(self, distance, then: Stop = Stop.HOLD, wait: bool = True):
+    def straight(self, distance, speed=None, acceleration=None, then: Stop = Stop.HOLD, wait: bool = True):
+        settings = self.motor_pair.settings()
+        self.motor_pair.settings(straight_speed=speed, turn_acceleration=acceleration)
         # heading & timeout are not used
         self.motor_pair.straight(distance, then, wait)
+        self.motor_pair.settings(*settings)
 
     def turn(self, angle, then: Stop = Stop.HOLD, wait: bool = True) -> None:
         self.motor_pair.turn(angle, then, wait)
@@ -80,9 +83,7 @@ class Robot:
 
 def main():
     bot = Robot()
-    while True:
-        print(bot.left_sensor.color())
-
+    bot.curve(10, 10)
 
 if __name__ == "__main__":
     main()
