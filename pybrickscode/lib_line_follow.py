@@ -3,6 +3,8 @@ from pybricks.parameters import Port, Color
 from pybricks.tools import wait, StopWatch
 from lib_move import start_tank, stop_tank
 
+debug = False
+
 SENSOR_DIFF_FACTOR = 1.0  # Range ~ (0 to 1.5)
 
 clock = StopWatch()
@@ -26,12 +28,22 @@ def gain(signal):
 def line_follow(robot: Robot, distance=None, time=None, condition=None):
     wheels = robot.motor_pair
     eyel = robot.left_sensor
+    eyer = robot.right_sensor
+    eyer.detectable_colors([Color.BLACK, Color.WHITE])
+    eyel.detectable_colors([Color.BLACK, Color.WHITE])
+
     def should_contin(robot):
         if distance is not None:
-            return wheels.distance() < distance
+            if debug:
+                print("limited by distance")
+            return robot.motor_pair.distance() < distance
         if time is not None:
+            if debug:
+                print("limited by time")
             return clock.time() < time
         if condition is not None:
+            if debug:
+                print("custom condition")
             return condition(robot)
 
     while should_contin(robot):
@@ -39,11 +51,12 @@ def line_follow(robot: Robot, distance=None, time=None, condition=None):
         lspeed, rspeed = gain(signal)
         start_tank(robot, lspeed, rspeed)
     wheels.stop()
-    print("done!")
 
 
 def should_continue(bot: Robot):
-    ri = bot.right_sensor
+    ri = bot.left_sensor
+    if debug:
+        print(ri.color())
     return ri.color() != Color.BLACK
 
 
@@ -53,8 +66,9 @@ def main():
     eyer = bot.right_sensor
     eyer.detectable_colors([Color.BLACK, Color.WHITE])
     eyel.detectable_colors([Color.BLACK, Color.WHITE])
-    line_follow(bot, condition=should_continue)
+    line_follow(bot, distance=300)
 
 
 if __name__ == "__main__":
+    debug = True
     main()
