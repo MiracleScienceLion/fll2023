@@ -25,18 +25,21 @@ def gain(signal):
     return speed + diff, speed - diff
 
 
-def line_follow(robot: Robot, distance=None, time=None, condition=None, sensor="right"):
-    f"""
+def line_follow(robot: Robot, distance=None, time=None, condition=None, sensor="R", edge="BW"):
+    """
     the func tion follows the black line
     :param robot: robot base instance
     :param distance: the distance limits the distance
-    :param time: the time limits the time 
+    :param time: the time limits the time
     :param condition:  is a custom condition callback function
-    :param sensor: can only be "left" or "right" (default) it specifies the sensors to be used
+    :param sensor: can only be "L" or "R" (default) it specifies the sensors to be used
+    :param edge: edge allows you to chose from
+           a) "bw" black on the right white on the left
+           b) "wb" white on the right black on the left
     :return:
     """
     wheels = robot.motor_pair
-    eye = robot.left_sensor if sensor == "left" else robot.right_sensor
+    eye = robot.left_sensor if sensor == "L" else robot.right_sensor
     eye.detectable_colors([Color.BLACK, Color.WHITE])
 
     def should_contin(robot):
@@ -56,7 +59,10 @@ def line_follow(robot: Robot, distance=None, time=None, condition=None, sensor="
     while should_contin(robot):
         signal = eye.reflection()
         lspeed, rspeed = gain(signal)
-        start_tank(robot, lspeed, rspeed)
+        if edge == "BW":
+            start_tank(robot, lspeed, rspeed)
+        elif edge == "WB":
+            start_tank(robot, rspeed, lspeed)
     wheels.stop()
 
 
@@ -73,7 +79,7 @@ def main():
     eyer = bot.right_sensor
     eyer.detectable_colors([Color.BLACK, Color.WHITE])
     eyel.detectable_colors([Color.BLACK, Color.WHITE])
-    line_follow(bot, distance=300, sensor="left")
+    line_follow(bot, distance=300, sensor="R", edge="WB")
 
 
 if __name__ == "__main__":
