@@ -3,6 +3,7 @@ from umath import *
 from fll_robot import Robot
 
 debug = False
+MAX_LENGTH = 500  # we use this to validate the curve radius.
 
 
 def principle(angle):
@@ -15,33 +16,25 @@ def principle(angle):
 
 
 # map size 2 m x 112 cm. let the 112 cm side be x; 2 m side be y
-def trip_plan(vertices, heading=0, motion_type=1, route_type='edge'):
+def trip_plan(vertices, heading=0, motion_type=1, route_type='straight'):
     """
     Given a polygon vertices and initial heading, generate the trip plan (a sequence of maneuvers)
     :param vertices: the ordered vertices of the polygon, as a list of 2d coordinates, such as [(x1, y1), (x2, y2) ...], with the starting position as the first element
     :param heading: starting heading direction (deg), follow pybricks orientation convention
     :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, pivot = 0 (turn only with no straight motion)
     when motion_typ = 0 (pivot) turn angle is aimed at aligning the front of robot to the designated direction
-    :param route_type: 'edge'=using straight edges; 'arc'= using arc for smooth connections
+    :param route_type: 'straight'=using straight edges; 'curve'= using curve for smooth connections
     :return: the maneuver sequence, e.g. [(turn_angle, distance, heading), ...]
     """
     maneuvers = []
     for i in range(1, len(vertices)):
-        if route_type == 'edge':
-            ms = edge_route(vertices[i - 1], vertices[i], heading, motion_type)
-            maneuvers.extend(ms)
-            heading = ms[-1][-1]  # update heading
-        elif route_type == 'arc':
-            turn_angle, distance, heading = arc_route(vertices[i - 1], vertices[i], heading, motion_type)
-            maneuvers.append((turn_angle, distance, heading))
+        ms = route(vertices[i - 1], vertices[i], heading, motion_type, route_type)
+        maneuvers.extend(ms)
+        heading = ms[-1][-1]  # update heading
     return maneuvers
 
 
-def arc_route(point1, point2, heading=0, motion_type=1):
-    pass
-
-
-def edge_route(point1, point2, heading=0, motion_type=1):
+def route(point1, point2, heading=0, motion_type=1, route_type='straight'):
     """
     Generate the routing parameters for a sequence of maneuvers, a turn plus a straight movement, that will ensure robot to traverse from point1 to point2.
     :param point1: starting point
@@ -49,32 +42,67 @@ def edge_route(point1, point2, heading=0, motion_type=1):
     :param heading: starting heading direction (deg), follow pybricks orientation convention
     :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, pivot = 0 (turn only with no straight motion)
     when motion_typ = 0 (pivot) turn angle is aimed at aligning the front of robot to the designated direction
+    :param route_type: 'straight' straight-edged polygon, 'curve' smoothed arc to connect vertices
     :return: a list of maneuvers, each as a tuple of (maneuver, param, ending orientation). Example, ('turn', angle, heading), ('straight', distance, heading)
     """
     displacement = [point2[0] - point1[0], point2[1] - point1[1]]
     polar_angle = atan2(displacement[1], displacement[0]) * 180 / pi
-    radius = sqrt(pow(displacement[1], 2) + pow(displacement[0], 2))
     new_heading = polar_angle + (180 if motion_type == -1 else 0)
+    distance = sqrt(pow(displacement[1], 2) + pow(displacement[0], 2)) * motion_type
+    if route_type == 'curve':
+        r, a, h = arc(distance, new_heading, heading)
+        if debug:
+            print('heading={} displacement={} polar_angle={} new_heading={}'.format(heading, displacement, polar_angle, new_heading))
+            print('curve radius={} curve angle={} new_heading={}'.format(r, a, h))
+        if abs(r) < MAX_LENGTH:
+            return [('curve', (r, a), h)]
+        # else fall back to straight routing
+    return edge(distance, new_heading, heading)
+
+
+def arc(distance, new_heading, current_heading):
+    """
+    Generate the routing parameters for a sequence of maneuvers, a turn plus a straight movement, that will ensure robot to traverse from point1 to point2.
+    :param distance: length of the edge to traverse
+    :param new_heading: the finishing heading (deg)
+    :param current_heading: the current robot heading (deg)
+    :return: the radius, turn angle, and the finishing heading (deg) of the arc
+    """
+    turn_angle = principle(new_heading - current_heading)
+    sv = -sin(turn_angle)
+    radius = distance / sv / 2 if sv else MAX_LENGTH
+    return radius, 2 * turn_angle, new_heading + turn_angle
+
+
+def edge(distance, new_heading, heading):
+    """
+    Generate the routing parameters for a sequence of maneuvers, turns and/or straight movements, that will ensure robot to traverse from point1 to point2.
+    :param distance: length of the edge to traverse
+    :param new_heading: the finishing heading (deg)
+    :param heading: starting heading direction (deg), follow pybricks orientation convention
+    when motion_typ = 0 (pivot) turn angle is aimed at aligning the front of robot to the designated direction
+    :return: a list of maneuvers, each as a tuple of (maneuver, param, ending orientation). Example, ('turn', angle, heading), ('straight', distance, heading)
+    """
     turn_angle = principle(new_heading - heading)
-    distance = radius * motion_type
     if debug:
         print('original heading={} new heading={} dist={} turn={}'.format(
-            heading, new_heading, radius, turn_angle))
+            heading, new_heading, distance, turn_angle))
     maneuvers = [('turn', turn_angle, new_heading)]
     if distance != 0:
         maneuvers.append(('straight', distance, new_heading))
     return maneuvers
 
 
-def polygon(heading, vertices, robot: Robot, motion_type: int = 1, reverse: bool = False):
+def polygon(vertices, robot: Robot, heading=0, motion_type: int = 1, route_type='straight', reverse: bool = False):
     """
     Given a polygon (vertices), plan the trip and execute the plan to traverse the polygon edges in order.
     heading = the initial orientation of the robot used for determining the first maneuver.
     If reverse = True, revert the entire trip backward back to the origin.
-    :param heading: initial heading direction (deg), follow pybricks orientation convention
     :param vertices: the ordered vertices of the polygon, as a list of 2d coordinates, such as [(x1, y1), (x2, y2) ...], with the starting position as the first element
     :param robot: the robot
+    :param heading: initial heading direction (deg), follow pybricks orientation convention
     :param motion_type: the direction for all the maneuvers: move forward = 1 (default), move backward = -1, pivot = 0 (turn only with no straight motion)
+    :param route_type: 'straight' straight-edged polygon, 'curve' smoothed arc to connect vertices
     :param reverse: if True, reverse course to undo all motions and retrack all the vertices back to the origin
     :return: final heading (deg), follow pybricks orientation convention
     """
@@ -87,19 +115,27 @@ def polygon(heading, vertices, robot: Robot, motion_type: int = 1, reverse: bool
                 robot.turn(param)
             elif m == 'straight':
                 robot.straight(param)
-            elif m == 'arc':
+            elif m == 'curve':
                 robot.curve(*param)
             # else: do nothing
 
-    base_maneuvers = trip_plan(vertices, heading, motion_type)
+    base_maneuvers = trip_plan(vertices, heading, motion_type, route_type)
     execute(base_maneuvers)
     if not reverse:
         return base_maneuvers[-1][-1]
 
     # reverse course
-    reverse_maneuvers = [(m, -param, h) for m, param, h in base_maneuvers[::-1]]
+    reverse_maneuvers = [(m, negate(param), h) for m, param, h in base_maneuvers[::-1]]
     execute(reverse_maneuvers)
     return reverse_maneuvers[-1][-1]
+
+
+def negate(param):
+    if type(param) is int:
+        return -param
+    if type(param) is tuple:
+        # if param = (radius, angle), negate radius and leave angle as is
+        return -param[0], param[1]
 
 
 if __name__ == "__main__":
@@ -108,28 +144,35 @@ if __name__ == "__main__":
 
 
     def tests():
-        heading = polygon(0, [[0, 0], [600, 0]], bot, motion_type=1)
-        heading = polygon(0, [[0, 0], [600, 0]], bot, motion_type=1, reverse=True)
-        heading = polygon(180, [[0, 0], [100, 0]], bot, motion_type=-1)
-        heading = polygon(180, [[0, 0], [100, 0]], bot, motion_type=-1, reverse=True)
-        heading = polygon(0, [[100, -100], [0, -100], [0, 0]], bot)
-        heading = polygon(180, [[100, -100], [0, -100], [0, 0]], bot)
-        heading = polygon(0, [[100, -100], [0, -100], [0, 0]], bot, motion_type=-1)
-        heading = polygon(0, [[0, 0], [100, 0], [100, -100], [0, -100], [0, 0]], bot, reverse=True)
-        heading = polygon(0, [[0, 940], [500, 940], [800, 250], [850, 150]], bot, reverse=True)
+        heading = polygon([[0, 0], [600, 0]], bot, 0, motion_type=1)
+        heading = polygon([[0, 0], [600, 0]], bot, 0, motion_type=1, reverse=True)
+        heading = polygon([[0, 0], [100, 0]], bot, 180, motion_type=-1)
+        heading = polygon([[0, 0], [100, 0]], bot, 180, motion_type=-1, reverse=True)
+        heading = polygon([[100, -100], [0, -100], [0, 0]], bot, 0)
+        heading = polygon([[100, -100], [0, -100], [0, 0]], bot, 180)
+        heading = polygon([[100, -100], [0, -100], [0, 0]], bot, 0, motion_type=-1)
+        heading = polygon([[0, 0], [100, 0], [100, -100], [0, -100], [0, 0]], bot, 0, reverse=True)
+        heading = polygon([[0, 940], [500, 940], [800, 250], [850, 150]], bot, 0, reverse=True)
 
 
     def roundtrip():
-        heading = polygon(0, [[0, 940], [500, 940], [800, 250], [850, 150]], bot)
-        heading = polygon(heading, [[850, 150], [800, 250]], bot, motion_type=-1)
-        heading = polygon(heading, [[800, 250], [700, -200], [300, -200], [100, 940]], bot)
-        heading = polygon(heading, [[100, 940], [0, 940]], bot, motion_type=-1)
+        heading = polygon([[0, 940], [500, 940], [800, 250], [850, 150]], bot, 0)
+        heading = polygon([[850, 150], [800, 250]], bot, heading, motion_type=-1)
+        heading = polygon([[800, 250], [700, -200], [300, -200], [100, 940]], bot, heading)
+        heading = polygon([[100, 940], [0, 940]], bot, heading, motion_type=-1)
 
 
     def undotrip():
-        heading = polygon(0, [[0, 940], [500, 940], [800, 250], [700, -200], [250, -200], [100, 940]], bot, reverse=True)
+        heading = polygon([[0, 940], [500, 940], [800, 250], [700, -200], [250, -200], [100, 940]], bot, 0, reverse=True)
+
+
+    def reverse_arcs():
+        # heading = polygon([[300, 0], [550, 250]], bot, route_type='curve', heading=90)
+        heading = polygon([[300, 0], [550, 250], [800, 0], [550, -250], [300, 0]], bot, heading=90, route_type='curve', reverse=True)
 
 
     # tests()
     # roundtrip()
-    undotrip()
+    # undotrip()
+    # arcs()
+    reverse_arcs()

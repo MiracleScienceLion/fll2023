@@ -83,7 +83,10 @@ class Robot:
 
 def main():
     bot = Robot()
-    bot.curve(10, 10)
+    bot.curve(100, 60)
+    bot.curve(100, -60)
+    bot.curve(-100, -60)
+    bot.curve(-100, 60)
 
 if __name__ == "__main__":
     main()
