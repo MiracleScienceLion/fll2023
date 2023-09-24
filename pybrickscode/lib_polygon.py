@@ -170,6 +170,7 @@ if __name__ == "__main__":
         heading = polygon([[0, 0], [300, 300]], bot, route_type='curve', heading=heading, reverse=True)
         # heading = polygon([[300, 0], [550, 250], [800, 0], [550, -250], [300, 0]], bot, heading=90, route_type='curve', reverse=True)
 
+
     def rearcs():
         # heading = polygon([[300, 0], [550, 250]], bot, route_type='curve', heading=90)
         heading = polygon([[300, 0], [550, 250], [800, 0], [550, -250], [300, 0]], bot, heading=90, route_type='curve', reverse=True)
@@ -177,13 +178,13 @@ if __name__ == "__main__":
 
     def sway():
         # heading = polygon([[300, 0], [550, 250]], bot, route_type='curve', heading=90)
-        # heading = polygon([[0, 0], [0, 150], [0, 300], [0, 450]], bot, heading=180, route_type='curve')
-        heading = polygon([[0, 0], [150, 150]], bot, heading=0, route_type='curve')
+        heading = polygon([[300, 0], [300, 350], [300, 700], [300, 1050]], bot, heading=0, route_type='curve')
+        # heading = polygon([[0, 0], [150, 150]], bot, heading=0, route_type='curve')
 
 
     # tests()
     # roundtrip()
     # undotrip()
-    arcs(180)
-    # rearcs()
+    # arcs(360)
+    rearcs()
     # sway()
