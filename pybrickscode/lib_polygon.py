@@ -48,16 +48,16 @@ def route(point1, point2, heading=0, motion_type=1, route_type='straight'):
     displacement = [point2[0] - point1[0], point2[1] - point1[1]]
     polar_angle = atan2(displacement[1], displacement[0]) * 180 / pi
     new_heading = polar_angle + (180 if motion_type == -1 else 0)
-    distance = sqrt(pow(displacement[1], 2) + pow(displacement[0], 2)) * motion_type
+    distance = sqrt(pow(displacement[1], 2) + pow(displacement[0], 2))
     if route_type == 'curve':
         r, a, h = arc(distance, new_heading, heading)
         if debug:
             print('heading={} displacement={} polar_angle={} new_heading={}'.format(heading, displacement, polar_angle, new_heading))
             print('curve radius={} curve angle={} new_heading={}'.format(r, a, h))
         if abs(r) < MAX_LENGTH:
-            return [('curve', (r, a), h)]
+            return [('curve', (r * motion_type, a), h)]
         # else fall back to straight routing
-    return edge(distance, new_heading, heading)
+    return edge(distance * motion_type, new_heading, heading)
 
 
 def arc(distance, new_heading, current_heading):
@@ -68,10 +68,10 @@ def arc(distance, new_heading, current_heading):
     :param current_heading: the current robot heading (deg)
     :return: the radius, turn angle, and the finishing heading (deg) of the arc
     """
-    turn_angle = principle(new_heading - current_heading)
-    sv = -sin(turn_angle)
+    angle = principle(new_heading - current_heading)
+    sv = abs(sin(angle))
     radius = distance / sv / 2 if sv else MAX_LENGTH
-    return radius, 2 * turn_angle, new_heading + turn_angle
+    return radius, 2 * angle, new_heading + angle
 
 
 def edge(distance, new_heading, heading):
@@ -131,7 +131,7 @@ def polygon(vertices, robot: Robot, heading=0, motion_type: int = 1, route_type=
 
 
 def negate(param):
-    if type(param) is int:
+    if type(param) is float:
         return -param
     if type(param) is tuple:
         # if param = (radius, angle), negate radius and leave angle as is
@@ -166,13 +166,24 @@ if __name__ == "__main__":
         heading = polygon([[0, 940], [500, 940], [800, 250], [700, -200], [250, -200], [100, 940]], bot, 0, reverse=True)
 
 
-    def reverse_arcs():
+    def arcs(heading):
+        heading = polygon([[0, 0], [300, 300]], bot, route_type='curve', heading=heading, reverse=True)
+        # heading = polygon([[300, 0], [550, 250], [800, 0], [550, -250], [300, 0]], bot, heading=90, route_type='curve', reverse=True)
+
+    def rearcs():
         # heading = polygon([[300, 0], [550, 250]], bot, route_type='curve', heading=90)
         heading = polygon([[300, 0], [550, 250], [800, 0], [550, -250], [300, 0]], bot, heading=90, route_type='curve', reverse=True)
+
+
+    def sway():
+        # heading = polygon([[300, 0], [550, 250]], bot, route_type='curve', heading=90)
+        # heading = polygon([[0, 0], [0, 150], [0, 300], [0, 450]], bot, heading=180, route_type='curve')
+        heading = polygon([[0, 0], [150, 150]], bot, heading=0, route_type='curve')
 
 
     # tests()
     # roundtrip()
     # undotrip()
-    # arcs()
-    reverse_arcs()
+    arcs(180)
+    # rearcs()
+    # sway()
