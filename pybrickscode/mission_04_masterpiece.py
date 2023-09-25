@@ -8,7 +8,7 @@ from lib_polygon import polygon
 
 
 def run(bot: Robot):
-    polygon(0, vertices=[(0, 960), (570, 960), (880, 180)], robot=bot, heading=0, motion_type=1, reverse=True)
+    polygon(robot=bot, vertices=0, forward=1, reverse=True)
     # wheels.straight(510)
     # wheels.curve(0,-66)
     # wheels.straight(850)
