@@ -119,7 +119,7 @@ def polygon(robot: Robot, vertices, forward: bool = True, route_type='straight',
                 robot.curve(*param)
             # else: do nothing
 
-    heading = bot.heading()
+    heading = robot.heading()
     base_maneuvers = trip_plan(vertices, heading, forward, route_type)
     execute(base_maneuvers)
     if reverse:
@@ -127,7 +127,7 @@ def polygon(robot: Robot, vertices, forward: bool = True, route_type='straight',
         reverse_maneuvers = [(m, negate(param), h) for m, param, h in base_maneuvers[::-1]]
         execute(reverse_maneuvers)
     if debug:
-        print('final heading={}'.format(bot.heading()))
+        print('final heading={}'.format(robot.heading()))
 
 
 def negate(param):
@@ -139,7 +139,7 @@ def negate(param):
 
 
 if __name__ == "__main__":
-    bot = Robot()
+    robot = Robot()
     debug = True
 
 
@@ -159,8 +159,8 @@ if __name__ == "__main__":
         # bot.reset_heading(180)
         # polygon(bot, [(100, -100), (0, -100), (0, 0)])
 
-        bot.reset_heading(-63.5)
-        polygon(bot, [(850, 150), (800, 250)], forward=False)
+        robot.reset_heading(-63.5)
+        polygon(robot, [(850, 150), (800, 250)], forward=False)
 
         # bot.reset_heading(180)
         # polygon(bot, [(100, -100), (0, -100), (0, 0)])
@@ -170,29 +170,29 @@ if __name__ == "__main__":
 
 
     def roundtrip():
-        polygon(bot, [(0, 940), (500, 940), (800, 250), (850, 150)])
-        polygon(bot, [(850, 150), (800, 250)], forward=False)
-        polygon(bot, [(800, 250), (700, -200), (300, -200), (100, 940)])
-        polygon(bot, [(100, 940), (0, 940)], forward=False)
+        polygon(robot, [(0, 940), (500, 940), (800, 250), (850, 150)])
+        polygon(robot, [(850, 150), (800, 250)], forward=False)
+        polygon(robot, [(800, 250), (700, -200), (300, -200), (100, 940)])
+        polygon(robot, [(100, 940), (0, 940)], forward=False)
 
 
     def undotrip():
-        polygon(bot, [(0, 940), (500, 940), (800, 250), (700, -200), (250, -200), (100, 940)], reverse=True)
+        polygon(robot, [(0, 940), (500, 940), (800, 250), (700, -200), (250, -200), (100, 940)], reverse=True)
 
 
     def arcs(heading):
-        bot.reset_heading(heading)
-        polygon(bot, [(0, 0), (300, 300)], route_type='curve', reverse=True)
+        robot.reset_heading(heading)
+        polygon(robot, [(0, 0), (300, 300)], route_type='curve', reverse=True)
 
 
     def circle():
-        bot.reset_heading(90)
-        polygon(bot, [(300, 0), (550, 250), (800, 0), (550, -250), (300, 0)], route_type='curve', reverse=True)
+        robot.reset_heading(90)
+        polygon(robot, [(300, 0), (550, 250), (800, 0), (550, -250), (300, 0)], route_type='curve', reverse=True)
 
 
     def sway():
-        bot.reset_heading(180)
-        polygon(bot, [(300, 0), (300, 450), (300, 900), (300, 1350)], route_type='curve')
+        robot.reset_heading(180)
+        polygon(robot, [(300, 0), (300, 450), (300, 900), (300, 1350)], route_type='curve')
 
 
     # tests()
