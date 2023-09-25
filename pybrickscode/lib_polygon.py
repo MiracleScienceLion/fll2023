@@ -69,7 +69,7 @@ def arc(distance, new_heading, current_heading):
     :return: the radius, turn angle, and the finishing heading (deg) of the arc
     """
     angle = principle(new_heading - current_heading)
-    sv = abs(sin(angle))
+    sv = abs(sin(angle * pi / 180))
     radius = distance / sv / 2 if sv else MAX_LENGTH
     return radius, 2 * angle, new_heading + angle
 
