@@ -14,10 +14,10 @@ def stop_tank(robot):
     robot.right_wheel.brake()
 
 
-def move(robot: Robot, distance_mm, heading, speed, timeout_ms=1000):
+def move(robot: Robot, distance, speed, timeout=1000):
     # heading & timeout are not used
     robot.motor_pair.distance_control.limits(speed=speed)
-    robot.motor_pair.straight(distance=distance_mm)
+    robot.motor_pair.straight(distance=distance)
 
 
 def main():

@@ -80,6 +80,12 @@ class Robot:
     def right_reflection(self) -> int:
         return self.right_sensor.reflection()
 
+    def heading(self) -> float:
+        return self.hub.imu.heading()
+
+    def reset_heading(self, heading: float) -> None:
+        return self.hub.imu.reset_heading(heading)
+
 
 def main():
     bot = Robot()
@@ -87,6 +93,7 @@ def main():
     bot.curve(100, -60)
     bot.curve(-100, -60)
     bot.curve(-100, 60)
+
 
 if __name__ == "__main__":
     main()
