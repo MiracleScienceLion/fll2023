@@ -6,22 +6,28 @@ from lib_move import move
 from lib_line_follow import line_follow
 from lib_polygon import polygon
 
-black_gear = 12
-gray_gear = 28
-black_gear = 36
-angle = -370
+motor_gear = 12
+transfer_gear = 28
+load_gear = 36
+gear_ratio = load_gear / motor_gear
+
+init_angle = 0
+deploy_angle = 180 * gear_ratio
+
 rotation_speed = 150
 lift_speed = 100
 straight_speed = 66
 
 
 def backoff(bot: Robot):
-    bot.left_motor.run_target(rotation_speed, 270, wait=False)
-    bot.right_motor.run_target(rotation_speed, 270)
-    bot.left_motor.run_target(rotation_speed, 0, wait=False)
-    bot.right_motor.run_target(rotation_speed, 0, wait=False)
+    bot.left_motor.run_target(rotation_speed, deploy_angle, wait=False)
+    bot.right_motor.run_target(rotation_speed, deploy_angle)
+    bot.left_motor.run_target(rotation_speed, init_angle, wait=False)
+    bot.right_motor.run_target(rotation_speed, init_angle, wait=False)
     while bot.right_color() != Color.BLUE:
-        bot.motor_pair.drive(-straight_speed, 0)
+        bot.motor_pair.drive(-straight_speed, turn_rate=0)
+    bot.left_motor.run_target(rotation_speed, init_angle, wait=False)
+    bot.right_motor.run_target(rotation_speed, init_angle, wait=False)
 
 
 def lift(bot: Robot, speed, target, straight):
@@ -33,26 +39,25 @@ def lift(bot: Robot, speed, target, straight):
     bot.motor_pair.straight(straight)
 
 
-def init(bot: Robot):
+def deploy(bot: Robot):
     bot.left_motor.reset_angle(0)
     bot.right_motor.reset_angle(0)
-    bot.left_motor.run_target(rotation_speed, 270, wait=False)
-    bot.right_motor.run_target(rotation_speed, 270)
-
-
-def deploy(bot: Robot):
+    deploy_speed = 300
+    bot.left_motor.run_target(deploy_speed, deploy_angle, wait=False)
+    bot.right_motor.run_target(deploy_speed, deploy_angle)
     bot.straight(120)
 
 
 def run(bot: Robot):
     # polygon(bot, vertices=[(0, -960),(-540,830),(0,210),(0,500), forward=True, reverse=True])
-    init(bot)
     # run deploy when robot is facing the tower and right eye on purple line
     deploy(bot)
     # power lift
-    lift(bot, rotation_speed, 150, straight=100)
-    # fine lift
-    lift(bot, lift_speed, 30, straight=10)
+    power_angle = 140 * gear_ratio
+    lift(bot, rotation_speed, power_angle, straight=100)
+    # fine tune height
+    fine_tune_angle = 100 * gear_ratio
+    lift(bot, lift_speed, fine_tune_angle, straight=10)
     backoff(bot)
 
 
