@@ -18,26 +18,21 @@ rotation_speed = 150
 lift_speed = 100
 straight_speed = 66
 
-
-def backoff(bot: Robot):
+def backoff(bot:Robot):
     bot.left_motor.run_target(rotation_speed, deploy_angle, wait=False)
     bot.right_motor.run_target(rotation_speed, deploy_angle)
     bot.left_motor.run_target(rotation_speed, init_angle, wait=False)
     bot.right_motor.run_target(rotation_speed, init_angle, wait=False)
     while bot.right_color() != Color.BLUE:
         bot.motor_pair.drive(-straight_speed, turn_rate=0)
+    bot.stop()
     bot.left_motor.run_target(rotation_speed, init_angle, wait=False)
-    bot.right_motor.run_target(rotation_speed, init_angle, wait=False)
+    bot.right_motor.run_target(rotation_speed, init_angle)
 
 
-def lift(bot: Robot, speed, target, straight):
-    bot.left_motor.run_target(speed, target, wait=False)
-    bot.right_motor.run_target(speed, target, wait=False)
-    a = bot.left_motor.angle()
-    t = abs((target - a) / speed)
-    bot.motor_pair.settings(straight_speed=straight / t)
-    bot.motor_pair.straight(straight)
-
+def lift(bot:Robot, speed, target):
+    bot.left_motor.run_target(speed, target * gear_ratio, wait=False)
+    bot.right_motor.run_target(speed, target * gear_ratio)
 
 def deploy(bot: Robot):
     bot.left_motor.reset_angle(0)
@@ -45,7 +40,7 @@ def deploy(bot: Robot):
     deploy_speed = 300
     bot.left_motor.run_target(deploy_speed, deploy_angle, wait=False)
     bot.right_motor.run_target(deploy_speed, deploy_angle)
-    bot.straight(120)
+    bot.straight(150)
 
 
 def run(bot: Robot):
@@ -53,18 +48,14 @@ def run(bot: Robot):
     # run deploy when robot is facing the tower and right eye on purple line
     deploy(bot)
     # power lift
-    power_angle = 140 * gear_ratio
-    lift(bot, rotation_speed, power_angle, straight=100)
+    lift(bot, rotation_speed, 140)
     # fine tune height
-    fine_tune_angle = 100 * gear_ratio
-    lift(bot, lift_speed, fine_tune_angle, straight=10)
+    lift(bot, lift_speed, 90)
     backoff(bot)
-
 
 def main():
     bot = Robot()
     run(bot)
-
 
 if __name__ == "__main__":
     main()
