@@ -31,7 +31,7 @@ class Robot:
         self.motor_pair.use_gyro(True)
         self.left_sensor = ColorSensor(left_sensor_port)
         self.right_sensor = ColorSensor(right_sensor_port)
-        self.left_motor = Motor(left_motor_port, Direction.CLOCKWISE)
+        self.left_motor = Motor(left_motor_port, Direction.COUNTERCLOCKWISE)
         self.right_motor = Motor(right_motor_port, Direction.CLOCKWISE)
         self.hub = PrimeHub()
         while not self.hub.imu.stationary():  # Reset IMU
