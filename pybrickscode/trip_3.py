@@ -11,9 +11,10 @@ def run(bot: Robot):
     bot.reset_heading(0)
     polygon(bot, vertices=[(0,-900),(790,-670),(850,-580)])
     polygon(bot, vertices=[(850,-580),(730,-730)], forward=False)
-    polygon(bot, vertices=[(730,-730),(740,-740)])
+    polygon(bot, vertices=[(730,-730),(630,-580)],forward=False,reverse=True)
     # for i in range(1):
-        # polygon(bot, vertices=[(680,-650),(730,-730)], reverse=True)
+        # polygon(bot, vertices=[(630,-580),(610,-650)],reverse=True)
+# polygon(bot, vertices=[(740,-740),(640,-760),(610,-650)],forward=False,reverse=True)
     # polygon(bot, vertices=[(640,-760),(700,-630)])
     # polygon(bot, vertices=[(700,-630),(720,-700)],reverse=True)
     # polygon(bot, vertices=[(720,-700),(910,60),(840,60)])
