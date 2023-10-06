@@ -9,16 +9,21 @@ from lib_polygon import polygon
 
 def run(bot: Robot):
     bot.reset_heading(0)
-    polygon(bot, vertices=[(0,-900),(790,-670),(850,-580)])
-    polygon(bot, vertices=[(850,-580),(730,-730)], forward=False)
-    polygon(bot, vertices=[(730,-730),(630,-580)],forward=False)
-    for i in range(2):
-        polygon(bot, vertices=[(630,-580), (730,-730)], reverse=True)
-    # polygon(bot, vertices=[(640,-760),(700,-630)])
-    # polygon(bot, vertices=[(700,-630),(720,-700)],reverse=True)
-    # polygon(bot, vertices=[(720,-700),(910,60),(840,60)])
+    skate_park = (850, -580)
+    front_point = (675, -660)
+    back_point = (600, -570)
+    polygon(bot, vertices=[(0, -900), (790, -670), skate_park])
+    polygon(bot, vertices=[skate_park, front_point], forward=False)
+    polygon(bot, vertices=[front_point, back_point], forward=False)
+    for i in range(3):
+        polygon(bot, vertices=[back_point, front_point])
+        polygon(bot, vertices=[front_point, back_point], forward=False)
+    # polygon(bot, vertices=[(730,-730),(630,-580)])
+    # polygon(bot, vertices=[(730,-730),(), (910,60),(840,60)])
     # polygon(bot, vertices=[(840,60),(910,60)], forward=False)
     # polygon(bot, vertices=[(910,60),(880,120),(940,180),(890,520),(290,950)])
+
+
 def main():
     bot = Robot()
     run(bot)
