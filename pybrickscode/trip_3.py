@@ -11,7 +11,7 @@ def run(bot: Robot):
     bot.reset_heading(0)
     skate_park = (850, -580)
     front_point = (675, -660)
-    back_point = (600, -570)
+    back_point = (590, -570)
     polygon(bot, vertices=[(10, -900), (790, -670), skate_park])
     polygon(bot, vertices=[skate_park, front_point], forward=False)
     for i in range(3):
