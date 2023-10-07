@@ -34,11 +34,15 @@ class Robot:
         self.left_motor = Motor(left_motor_port, Direction.COUNTERCLOCKWISE)
         self.right_motor = Motor(right_motor_port, Direction.CLOCKWISE)
         self.hub = PrimeHub()
-        while not self.hub.imu.stationary():  # Reset IMU
-            wait(100)
+        self.wait_for_stationary()
         self.hub.imu.reset_heading(0)
         # self.hub.speaker.beep()
         print('Robot Created!')
+
+    def wait_for_stationary(self):
+        while not self.hub.imu.stationary():  # Reset IMU
+            wait(100)
+
 
     def start_tank(self, left_speed, right_speed):
         speed = (right_speed + left_speed) / 2

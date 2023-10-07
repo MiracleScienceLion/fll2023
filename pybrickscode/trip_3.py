@@ -7,20 +7,35 @@ from lib_line_follow import line_follow
 from lib_polygon import polygon
 
 
-def run(bot: Robot):
+def trip_03_part_1(bot: Robot):
     bot.reset_heading(0)
     skate_park = (850, -580)
     front_point = (675, -660)
     back_point = (590, -570)
+    pivot_point = (700, -550)
     polygon(bot, vertices=[(10, -900), (790, -670), skate_park])
     polygon(bot, vertices=[skate_park, front_point], forward=False)
     for i in range(3):
         polygon(bot, vertices=[back_point, front_point])
         polygon(bot, vertices=[front_point, back_point], forward=False)
-    # polygon(bot, vertices=[(730,-730),(630,-580)])
+    polygon(bot, vertices=[back_point, pivot_point], route_type='curve')
     # polygon(bot, vertices=[(730,-730),(), (910,60),(840,60)])
-    # polygon(bot, vertices=[(840,60),(910,60)], forward=False)
-    # polygon(bot, vertices=[(910,60),(880,120),(940,180),(890,520),(290,950)])
+    # polygon(bot, vertices=[pivot_point,(910,60)], forward=False)
+    polygon(bot, vertices=[pivot_point, (650, 0), (600, 0)])
+    polygon(bot, vertices=[(600, 0), (1050, 0)], forward=False)
+
+
+def trip_03_part_2(bot: Robot):
+    # bot.wait_for_stationary()
+    bot.reset_heading(180)
+    polygon(bot, vertices=[(1125, 0), (960, 0)])
+
+
+def run(bot: Robot):
+    trip_03_part_1(bot)
+    trip_03_part_2(bot)
+
+    # polygon(bot, vertices=[pivot_point, (910,60),(880,120),(940,180),(890,520),(290,950)])
 
 
 def main():
