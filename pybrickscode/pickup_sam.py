@@ -15,12 +15,12 @@ deploy_angle = 94 * gear_ratio
 rotation_speed = 300
 
 
-def deploy(bot: Robot):
-    bot.right_motor.run_angle(rotation_speed, deploy_angle)
+def deploy(bot: Robot, wait = False):
+    bot.right_motor.run_angle(rotation_speed, deploy_angle, wait=wait)
 
 
-def undeploy(bot:Robot):
-    bot.right_motor.run_angle(rotation_speed, -deploy_angle)
+def undeploy(bot:Robot, wait = False):
+    bot.right_motor.run_angle(rotation_speed, -deploy_angle, wait=wait)
 
 
 if __name__ == "__main__":
