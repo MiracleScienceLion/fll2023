@@ -3,9 +3,10 @@ from pybricks.parameters import Button, Color, Direction, Icon, Port, Side, Stop
 from fll_robot import Robot
 from lib_turn import gyro_turn
 from lib_move import move
-from pickup_sam import deploy, undeploy
 from lib_line_follow import line_follow
 from lib_polygon import polygon
+from pickup_sam import deploy, undeploy
+from mission_11_light import run as run_light
 
 
 def trip_03_part_1(bot: Robot):
@@ -34,23 +35,24 @@ def trip_03_part_1(bot: Robot):
     polygon(bot, vertices=[pivot_point_r, pivot_point], route_type='curve')
     # polygon(bot, vertices=[(730,-730),(), (910,60),(840,60)])
     # polygon(bot, vertices=[pivot_point,(910,60)], forward=False)
-    polygon(bot, vertices=[pivot_point, (650, 0), (600, 0)])
-    # polygon(bot, vertices=[(600, 0), (1050, 0)], forward=False)
+    polygon(bot, vertices=[pivot_point, (650, -20), (600, -20)])
+    polygon(bot, vertices=[(600, -20), (1050, -20)], forward=False)
 
 
 def trip_03_part_2(bot: Robot):
     # bot.wait_for_stationary()
     bot.reset_heading(180)
-    light_show_point = (960, 0)
+    light_show_point = (960, -5)
     polygon(bot, vertices=[(1125, 0), light_show_point])
-    polygon(bot, vertices=[light_show_point, (700,120), (700,120)])
-    # polygon(bot, vertices=[light_show_point, (700,120), (880,120),(940,180),(890,520),(290,950)])
+    run_light(bot)
+    m05_finishing = (900, 200)
+    polygon(bot, vertices=[light_show_point, (1000, 120), m05_finishing])
+    polygon(bot, vertices=[m05_finishing, (890, 520), (290, 950)])
 
 
 def run(bot: Robot):
     trip_03_part_1(bot)
     trip_03_part_2(bot)
-
 
 
 def main():

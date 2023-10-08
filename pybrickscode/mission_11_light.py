@@ -11,9 +11,9 @@ load_gear = 36
 gear_ratio = load_gear / motor_gear
 
 init_angle = 0
-deploy_angle = 140 * gear_ratio
-power_lift_target = 90
-fine_lift_target = 30
+deploy_angle = 120
+lift_target_angle = 30
+power_lift_percent = 90
 
 rotation_speed = 150
 lift_speed = 100
@@ -21,7 +21,7 @@ straight_speed = 66
 
 
 def backoff(bot: Robot):
-    bot.left_motor.run_target(rotation_speed, deploy_angle)
+    bot.left_motor.run_target(rotation_speed, deploy_angle * gear_ratio)
     bot.left_motor.run_target(rotation_speed, init_angle, wait=False)
     while bot.right_color() != Color.BLUE:
         bot.motor_pair.drive(-straight_speed, turn_rate=0)
@@ -36,16 +36,18 @@ def lift(bot: Robot, speed, target, straight=0):
 def deploy(bot: Robot):
     bot.left_motor.reset_angle(0)
     deploy_speed = 300
-    bot.left_motor.run_target(deploy_speed, deploy_angle)
+    bot.left_motor.run_target(deploy_speed, deploy_angle * gear_ratio)
     bot.straight(150)
 
 
 def run(bot: Robot):
     deploy(bot)
     # power lift
-    lift(bot, rotation_speed, power_lift_target, straight=20)
+    power_lift = lift_target_angle * power_lift_percent / 100
+    lift(bot, rotation_speed, power_lift, straight=20)
     # fine tune height
-    lift(bot, lift_speed, fine_lift_target, straight=10)
+    fine_tune = lift_target_angle * (100 - power_lift_percent) / 100
+    lift(bot, lift_speed, lift_target_angle, straight=10)
     backoff(bot)
 
 
