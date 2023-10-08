@@ -56,7 +56,7 @@ def route(point1, point2, heading=0, forward=True, route_type='straight'):
             print('heading={} displacement={} polar_angle={} new_heading={}'.format(heading, displacement, polar_angle, new_heading))
             print('curve radius={} curve angle={} new_heading={}'.format(r, a, h))
         if abs(r) < MAX_LENGTH:
-            return [('curve', (r * direction, a), h)]
+            return [('curve', (r * direction, a * direction), h)]
         # else fall back to straight routing
     return edge(distance * direction, new_heading, heading)
 
@@ -159,8 +159,13 @@ if __name__ == "__main__":
         # bot.reset_heading(180)
         # polygon(bot, [(100, -100), (0, -100), (0, 0)])
 
-        robot.reset_heading(-63.5)
-        polygon(robot, [(850, 150), (800, 250)], forward=False)
+        # robot.reset_heading(-63.5)
+        # polygon(robot, [(850, 150), (800, 250)], forward=False)
+
+        robot.reset_heading(-45)
+        front_point = (660, -680)
+        pivot_point_r = (500, -700)
+        polygon(robot, vertices=[front_point, pivot_point_r], forward=False, route_type='curve')
 
         # bot.reset_heading(180)
         # polygon(bot, [(100, -100), (0, -100), (0, 0)])
