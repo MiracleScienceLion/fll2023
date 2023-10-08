@@ -11,8 +11,8 @@ from lib_polygon import polygon
 def trip_03_part_1(bot: Robot):
     bot.reset_heading(0)
     skate_park = (850, -580)
-    front_point = (660, -670)
-    back_point = (580, -580)
+    front_point = (660, -680)
+    back_point = (570, -590)
     pivot_point = (700, -550)
     polygon(bot, vertices=[(20, -900), (790, -670), skate_park])
     polygon(bot, vertices=[skate_park, front_point], forward=False)
@@ -27,14 +27,15 @@ def trip_03_part_1(bot: Robot):
     polygon(bot, vertices=[front_point, back_point], forward=False)
 
     # 3
+    pivot_point_r = (500, -620)
     polygon(bot, vertices=[back_point, front_point])
-    polygon(bot, vertices=[front_point, back_point], forward=False)
+    polygon(bot, vertices=[front_point, pivot_point_r], forward=False, route_type='curve')
 
-    polygon(bot, vertices=[back_point, pivot_point], route_type='curve')
+    polygon(bot, vertices=[pivot_point_r, pivot_point], route_type='curve')
     # polygon(bot, vertices=[(730,-730),(), (910,60),(840,60)])
     # polygon(bot, vertices=[pivot_point,(910,60)], forward=False)
     polygon(bot, vertices=[pivot_point, (650, 0), (600, 0)])
-    polygon(bot, vertices=[(600, 0), (1050, 0)], forward=False)
+    # polygon(bot, vertices=[(600, 0), (1050, 0)], forward=False)
 
 
 def trip_03_part_2(bot: Robot):
