@@ -1,19 +1,15 @@
-from pybricks.parameters import Button, Color, Direction, Icon, Port, Side, Stop
+from pybricks.parameters import Color
+from pybricks.tools import wait, StopWatch
 
 from fll_robot import Robot
-from lib_turn import gyro_turn
-from lib_move import move
-from lib_line_follow import line_follow
-from lib_polygon import polygon
 
 motor_gear = 12
 load_gear = 36
 gear_ratio = load_gear / motor_gear
 
 init_angle = 0
-deploy_angle = 120
+deploy_angle = 130
 lift_target_angle = 30
-power_lift_percent = 90
 
 rotation_speed = 150
 lift_speed = 100
@@ -29,28 +25,50 @@ def backoff(bot: Robot):
     bot.left_motor.run_target(rotation_speed, init_angle)
 
 
-def lift(bot: Robot, speed, target, straight=0):
-    bot.left_motor.run_target(speed, target * gear_ratio)
+def pulse(bot: Robot):
+    angle = bot.left_motor.angle()
+    amp = 20
+    translation = amp * 1.
+    rotation = amp * gear_ratio * 2
+    bot.straight(translation, wait=False)
+    bot.left_motor.run_target(2 * rotation_speed, angle + rotation, wait=False)
+    wait(500)
+    bot.straight(-translation, wait=False)
+    bot.left_motor.run_target(2 * rotation_speed, angle - rotation, wait=False)
+    wait(500)
+
+
+def lift(bot, timeout=7000):
+    target = lift_target_angle * gear_ratio
+    watch = StopWatch()
+    begin = watch.time()
+    bot.left_motor.run_target(rotation_speed, target, wait=False)
+    while bot.left_motor.angle() > target + 5:
+        wait(100)
+        time = watch.time()
+        # print('time= {}'.format(time))
+        if time - begin > timeout:
+            break
+        elif time - begin > timeout / 2:
+            pulse(bot)
 
 
 def deploy(bot: Robot):
     bot.left_motor.reset_angle(0)
     deploy_speed = 300
     bot.left_motor.run_target(deploy_speed, deploy_angle * gear_ratio)
-    bot.straight(150)
+    bot.straight(160)
 
 
 def run(bot: Robot):
     deploy(bot)
-    # power lift
-    power_lift = lift_target_angle * power_lift_percent / 100
-    lift(bot, rotation_speed, power_lift, straight=20)
-    # fine tune height
-    fine_tune = lift_target_angle * (100 - power_lift_percent) / 100
-    lift(bot, lift_speed, lift_target_angle, straight=10)
+    lift(bot)
     backoff(bot)
 
 
 if __name__ == "__main__":
     bot = Robot()
+    # while True:
+    #     pulse(bot.left_motor)
+
     run(bot)
