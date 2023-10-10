@@ -36,7 +36,7 @@ def trip_03_part_1(bot: Robot):
 
 def trip_03_part_2(bot: Robot):
     bot.reset_heading(180)
-    light_show_point = (960,  -5)
+    light_show_point = (960, -5)
     polygon(bot, vertices=[(1125, light_show_y), light_show_point])
     run_light(bot)
     m05_deploy = (1000, 140)
