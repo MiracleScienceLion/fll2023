@@ -8,7 +8,7 @@ from lib_polygon import polygon
 
 
 def run(bot: Robot):
-    print("trip_02")
+    pass
 
 
 if __name__ == "__main__":
