@@ -1,10 +1,6 @@
-from pybricks.parameters import Button, Color, Direction, Icon, Port, Side, Stop
-
-from fll_robot import Robot
-from lib_turn import gyro_turn
-from lib_move import move
-from lib_line_follow import line_follow
 from lib_polygon import polygon
+from pybrickscode.fll_robot import Robot
+
 
 def run(bot: Robot):
     bot.reset_heading(-90)
@@ -17,9 +13,6 @@ def run(bot: Robot):
     polygon(bot, vertices=[(a_number, 105), (a_number, -1008)])
 
 
-def main():
+if __name__ == "__main__":
     bot = Robot()
     run(bot)
-
-if __name__ == "__main__":
-    main()
