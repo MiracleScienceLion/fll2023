@@ -70,17 +70,6 @@ def right_button_event(bot: Robot, trip_num: int) -> int:
     return trip_num + 1
 
 
-def bluetooth_button_event(bot: Robot, trip_num: int) -> int:
-    logger.info('bluetooth_button_event and stop')
-    return trip_num
-
-
-def center_button_event(bot: Robot, trip_num: int) -> int:
-    logger.info('center_button_event')
-    run_trip(bot, trip_num)
-    return trip_num
-
-
 trip_num_to_func = {
     1: trip_01,
     2: trip_02,
@@ -121,24 +110,27 @@ def save_trip_num(bot: Robot, trip_num: int):
 
 
 def main():
+    """
+    Button.CENTER: start this program
+    Button.BLUETOOTH: start subprogram trip_xx. While subprogram is running, Button.CENTER to stop everything and exit system
+    Button.LEFT: go to the previous subprogram (decrement by one)
+    Button.RIGHT: go to the next subprogram (increment by one)
+    """
     bot = Robot()
-    bot.hub.system.set_stop_button(Button.BLUETOOTH)
     trip_num = load_trip_num(bot)
     prev_buttons = None
     while True:
         bot.hub.display.char(str(trip_num))
         buttons = bot.hub.buttons.pressed()
+        # Button press will generate a stream of events.
+        # With the help of prev_buttons, only process the 1st event of such stream
         if buttons and not prev_buttons:
-            # Only process the 1st event of a button press,
-            # As a single button press may trigger in multiple button events
             if Button.LEFT in buttons:
                 trip_num = left_button_event(bot, trip_num)
             elif Button.RIGHT in buttons:
                 trip_num = right_button_event(bot, trip_num)
             elif Button.BLUETOOTH in buttons:
-                trip_num = bluetooth_button_event(bot, trip_num)
-            elif Button.CENTER in buttons:
-                trip_num = center_button_event(bot, trip_num)
+                run_trip(bot, trip_num)
             save_trip_num(bot, trip_num)
         prev_buttons = buttons
     print('event loop ended.')
