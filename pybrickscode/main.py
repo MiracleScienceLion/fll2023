@@ -1,10 +1,14 @@
+"""
+############### DO NOT CHANGE ###############
+"""
+
 from pybricks.parameters import Button, Color
+from pybricks.tools import wait
 
 from fll_robot import Robot
 from lib_logger import Logger
 
 
-############### CHANGE CONTENT BELOW ###############
 def trip_01(bot: Robot):
     from trip_01 import run
     run(bot)
@@ -45,9 +49,6 @@ def trip_08(bot: Robot):
     run(bot)
 
 
-############### CHANGE CONTENT ABOVE ###############
-
-############### DO NOT CHANGE BELOW ###############
 TRIP_START = 1
 TRIP_END = 8
 
@@ -92,7 +93,9 @@ def left_button_event(bot: Robot, trip_num: int) -> int:
     if trip_num <= TRIP_START:
         logger.warning('At leftmost already')
         return trip_num
-    return trip_num - 1
+    trip_num -= 1
+    save_trip_num(bot, trip_num)
+    return trip_num
 
 
 def right_button_event(bot: Robot, trip_num: int) -> int:
@@ -100,7 +103,9 @@ def right_button_event(bot: Robot, trip_num: int) -> int:
     if trip_num >= TRIP_END:
         logger.warning('At rightmost already')
         return trip_num
-    return trip_num + 1
+    trip_num += 1
+    save_trip_num(bot, trip_num)
+    return trip_num
 
 
 def save_trip_num(bot: Robot, trip_num: int):
@@ -110,10 +115,10 @@ def save_trip_num(bot: Robot, trip_num: int):
 
 def main():
     """
-    Button.CENTER: start the main program
-    Button.BLUETOOTH: start subprogram 'trip_xx'. While subprogram is running, Button.CENTER to stop everything and exit system
-    Button.LEFT: go to the previous subprogram (decrement by one)
-    Button.RIGHT: go to the next subprogram (increment by one)
+    Button.CENTER: start the main program (button color changes to RED while program is running). To stop the program, press Button.CENTER again.
+    Button.BLUETOOTH: start subprogram 'trip_xx'. In emergency if one need to abort the trip, press Button.CENTER to shut down.
+    Button.LEFT: go to the previous subprogram (decrease trip number by one)
+    Button.RIGHT: go to the next subprogram (increase trip number by one)
     When system restart, the previously selected trip number is reloaded
     """
     bot = Robot()
@@ -132,10 +137,8 @@ def main():
                 trip_num = right_button_event(bot, trip_num)
             elif Button.BLUETOOTH in buttons:
                 run_trip(bot, trip_num)
-            save_trip_num(bot, trip_num)
         prev_buttons = buttons
-
+        wait(10)
 
 if __name__ == "__main__":
     main()
-############### DO NOT CHANGE ABOVE ###############
