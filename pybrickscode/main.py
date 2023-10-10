@@ -138,7 +138,7 @@ def main():
     trip_num = load_trip_num(bot)
     prev_buttons = None
     while True:
-        bot.hub.display.number(trip_num)
+        bot.hub.display.char(str(trip_num))
         buttons = bot.hub.buttons.pressed()
         if buttons and not prev_buttons:
             # Only process the 1st event of a button press,
