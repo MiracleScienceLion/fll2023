@@ -1,4 +1,4 @@
-from pybricks.parameters import Button
+from pybricks.parameters import Button, Color
 
 from fll_robot import Robot
 from lib_logger import Logger
@@ -118,6 +118,7 @@ def main():
     """
     bot = Robot()
     trip_num = load_trip_num(bot)
+    bot.hub.light.on(Color.RED)
     prev_buttons = None
     while True:
         bot.hub.display.char(str(trip_num))
