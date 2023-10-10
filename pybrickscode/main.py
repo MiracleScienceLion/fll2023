@@ -19,43 +19,43 @@ def trip_01(bot: Robot):
 
 def trip_02(bot: Robot):
     logger.info('trip_02')
-    from trip_01 import run
+    from trip_02 import run
     run(bot)
 
 
 def trip_03(bot: Robot):
     logger.info('trip_03')
-    from trip_01 import run
+    from trip_03 import run
     run(bot)
 
 
 def trip_04(bot: Robot):
     logger.info('trip_04')
-    from trip_01 import run
+    from trip_04 import run
     run(bot)
 
 
 def trip_05(bot: Robot):
     logger.info('trip_05')
-    from trip_01 import run
+    from trip_05 import run
     run(bot)
 
 
 def trip_06(bot: Robot):
     logger.info('trip_06')
-    from trip_01 import run
+    from trip_06 import run
     run(bot)
 
 
 def trip_07(bot: Robot):
     logger.info('trip_07')
-    from trip_01 import run
+    from trip_07 import run
     run(bot)
 
 
 def trip_08(bot: Robot):
     logger.info('trip_08')
-    from trip_01 import run
+    from trip_08 import run
     run(bot)
 
 
@@ -119,7 +119,7 @@ def load_trip_num(bot: Robot) -> int:
     data = bot.hub.system.storage(0, read=2)
     try:
         trip_num = int(data)
-        if (TRIP_START <= trip_num <= TRIP_END):
+        if TRIP_START <= trip_num <= TRIP_END:
             return trip_num
         else:
             return TRIP_START
