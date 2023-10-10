@@ -43,11 +43,15 @@ class Robot:
         while not self.hub.imu.stationary():  # Reset IMU
             wait(100)
 
-
     def start_tank(self, left_speed, right_speed):
         speed = (right_speed + left_speed) / 2
         turn_rate = (right_speed - left_speed) / self.axle_track
         self.motor_pair.drive(speed, turn_rate)
+
+    def stop_robot(self) -> None:
+        self.motor_pair.stop()
+        self.left_motor.stop()
+        self.right_motor.stop()
 
     def stop(self) -> None:
         self.motor_pair.stop()
