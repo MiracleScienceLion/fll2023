@@ -111,10 +111,11 @@ def save_trip_num(bot: Robot, trip_num: int):
 
 def main():
     """
-    Button.CENTER: start this program
-    Button.BLUETOOTH: start subprogram trip_xx. While subprogram is running, Button.CENTER to stop everything and exit system
+    Button.CENTER: start the main program
+    Button.BLUETOOTH: start subprogram 'trip_xx'. While subprogram is running, Button.CENTER to stop everything and exit system
     Button.LEFT: go to the previous subprogram (decrement by one)
     Button.RIGHT: go to the next subprogram (increment by one)
+    When system restart, the previously selected trip number is reloaded
     """
     bot = Robot()
     trip_num = load_trip_num(bot)
