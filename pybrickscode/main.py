@@ -9,30 +9,56 @@ from fll_robot import Robot
 # from lib_move import move
 from lib_logger import Logger
 
+
 ############### CHANGE CONTENT BELOW ###############
 def trip_01(bot: Robot):
     logger.info('trip_01')
+    from trip_01 import run
+    run(bot)
+
 
 def trip_02(bot: Robot):
     logger.info('trip_02')
+    from trip_01 import run
+    run(bot)
+
 
 def trip_03(bot: Robot):
     logger.info('trip_03')
+    from trip_01 import run
+    run(bot)
+
 
 def trip_04(bot: Robot):
     logger.info('trip_04')
+    from trip_01 import run
+    run(bot)
+
 
 def trip_05(bot: Robot):
     logger.info('trip_05')
+    from trip_01 import run
+    run(bot)
+
 
 def trip_06(bot: Robot):
     logger.info('trip_06')
+    from trip_01 import run
+    run(bot)
+
 
 def trip_07(bot: Robot):
     logger.info('trip_07')
+    from trip_01 import run
+    run(bot)
+
 
 def trip_08(bot: Robot):
     logger.info('trip_08')
+    from trip_01 import run
+    run(bot)
+
+
 ############### CHANGE CONTENT ABOVE ###############
 
 ############### DO NOT CHANGE BELOW ###############
@@ -41,13 +67,15 @@ TRIP_END = 8
 
 logger = Logger(Logger.DEBUG)
 
+
 def left_button_event(bot: Robot, trip_num: int) -> int:
     logger.info('left_button_event')
     if trip_num <= TRIP_START:
         logger.warning('At leftmost already')
         return trip_num
     return trip_num - 1
-    
+
+
 def right_button_event(bot: Robot, trip_num: int) -> int:
     logger.info('right_button_event')
     if trip_num >= TRIP_END:
@@ -55,14 +83,17 @@ def right_button_event(bot: Robot, trip_num: int) -> int:
         return trip_num
     return trip_num + 1
 
+
 def bluetooth_button_event(bot: Robot, trip_num: int) -> int:
     logger.info('bluetooth_button_event and stop')
     return trip_num
-    
+
+
 def center_button_event(bot: Robot, trip_num: int) -> int:
     logger.info('center_button_event')
     run_trip(bot, trip_num)
     return trip_num
+
 
 trip_num_to_func = {
     1: trip_01,
@@ -75,6 +106,7 @@ trip_num_to_func = {
     8: trip_08,
 }
 
+
 def run_trip(bot: Robot, trip_num: int):
     if trip_num in trip_num_to_func:
         return trip_num_to_func[trip_num](bot)
@@ -84,7 +116,7 @@ def run_trip(bot: Robot, trip_num: int):
 
 def load_trip_num(bot: Robot) -> int:
     """Try to load trip num from hub memory, if non-existant use TRIP_START."""
-    data = bot.hub.system.storage(0,read=2)
+    data = bot.hub.system.storage(0, read=2)
     try:
         trip_num = int(data)
         if (TRIP_START <= trip_num <= TRIP_END):
@@ -94,9 +126,11 @@ def load_trip_num(bot: Robot) -> int:
     except ValueError:
         return TRIP_START
 
+
 def save_trip_num(bot: Robot, trip_num: int):
     trip_num_str = f'{trip_num:02d}'
     bot.hub.system.storage(0, write=trip_num_str)
+
 
 def main():
     bot = Robot()
@@ -106,7 +140,7 @@ def main():
     while True:
         bot.hub.display.number(trip_num)
         buttons = bot.hub.buttons.pressed()
-        if buttons and not prev_buttons: 
+        if buttons and not prev_buttons:
             # Only process the 1st event of a button press,
             # As a single button press may trigger in multiple button events
             if Button.LEFT in buttons:
@@ -120,6 +154,7 @@ def main():
             save_trip_num(bot, trip_num)
         prev_buttons = buttons
     print('event loop ended.')
+
 
 if __name__ == "__main__":
     main()
