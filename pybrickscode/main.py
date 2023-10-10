@@ -53,23 +53,6 @@ TRIP_END = 8
 
 logger = Logger(Logger.DEBUG)
 
-
-def left_button_event(bot: Robot, trip_num: int) -> int:
-    logger.info('left_button_event')
-    if trip_num <= TRIP_START:
-        logger.warning('At leftmost already')
-        return trip_num
-    return trip_num - 1
-
-
-def right_button_event(bot: Robot, trip_num: int) -> int:
-    logger.info('right_button_event')
-    if trip_num >= TRIP_END:
-        logger.warning('At rightmost already')
-        return trip_num
-    return trip_num + 1
-
-
 trip_num_to_func = {
     1: trip_01,
     2: trip_02,
@@ -102,6 +85,22 @@ def load_trip_num(bot: Robot) -> int:
             return TRIP_START
     except ValueError:
         return TRIP_START
+
+
+def left_button_event(bot: Robot, trip_num: int) -> int:
+    logger.info('left_button_event')
+    if trip_num <= TRIP_START:
+        logger.warning('At leftmost already')
+        return trip_num
+    return trip_num - 1
+
+
+def right_button_event(bot: Robot, trip_num: int) -> int:
+    logger.info('right_button_event')
+    if trip_num >= TRIP_END:
+        logger.warning('At rightmost already')
+        return trip_num
+    return trip_num + 1
 
 
 def save_trip_num(bot: Robot, trip_num: int):
