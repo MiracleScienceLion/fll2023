@@ -133,7 +133,6 @@ def main():
                 run_trip(bot, trip_num)
             save_trip_num(bot, trip_num)
         prev_buttons = buttons
-    print('event loop ended.')
 
 
 if __name__ == "__main__":
