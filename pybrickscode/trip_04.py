@@ -1,5 +1,5 @@
 from lib_polygon import polygon
-from pybrickscode.fll_robot import Robot
+from fll_robot import Robot
 
 
 def run(bot: Robot):

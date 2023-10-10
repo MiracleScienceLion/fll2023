@@ -1,7 +1,7 @@
 from lib_polygon import polygon
 from pickup_sam import deploy, undeploy
 from mission_11_light import run as run_light
-from pybrickscode.fll_robot import Robot
+from fll_robot import Robot
 
 light_show_y = -15
 
