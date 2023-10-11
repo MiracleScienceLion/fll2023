@@ -3,15 +3,16 @@ from pickup_sam import deploy, undeploy
 from mission_11_light import run as run_light
 from fll_robot import Robot
 
-light_show_y = -15
+light_show_y = -25
 
 
 def trip_03_part_1(bot: Robot):
     bot.reset_heading(0)
-    skate_park = (850, -580)
-    front_point = (660, -680)
-    back_point = (570, -590)
-    pivot_point = (700, -550)
+    skate_park = (860, -540)
+    front_point = (665, -675)
+    back_point = (580, -590)
+    pivot_point = (680, -570)
+    pivot_point_r = (500, -620)
     polygon(bot, vertices=[(20, -900), (790, -670), skate_park])
     polygon(bot, vertices=[skate_park, front_point], forward=False)
     deploy(bot, wait=True)
@@ -25,19 +26,18 @@ def trip_03_part_1(bot: Robot):
     polygon(bot, vertices=[front_point, back_point], forward=False)
 
     # 3
-    pivot_point_r = (500, -620)
     polygon(bot, vertices=[back_point, front_point])
     polygon(bot, vertices=[front_point, pivot_point_r], forward=False, route_type='curve')
 
     polygon(bot, vertices=[pivot_point_r, pivot_point], route_type='curve')
-    polygon(bot, vertices=[pivot_point, (650, light_show_y), (600, light_show_y)])
-    polygon(bot, vertices=[(600, light_show_y), (1000, light_show_y)], forward=False)
+    polygon(bot, vertices=[pivot_point, (650, light_show_y), (660, light_show_y)], forward=False)
+    # polygon(bot, vertices=[(600, light_show_y), (1000, light_show_y)], forward=False)
 
 
 def trip_03_part_2(bot: Robot):
-    bot.reset_heading(180)
-    light_show_point = (960, -5)
-    polygon(bot, vertices=[(1125, light_show_y), light_show_point])
+    # bot.reset_heading(180)
+    light_show_point = (960, light_show_y)
+    # polygon(bot, vertices=[(1125, light_show_y), light_show_point])
     run_light(bot)
     m05_deploy = (1000, 140)
     m05_finishing = (900, 200)
