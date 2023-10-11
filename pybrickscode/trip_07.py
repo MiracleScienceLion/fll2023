@@ -8,6 +8,7 @@ from lib_polygon import polygon
 
 
 def run(bot: Robot):
+    # TODO implement this function
     pass
 
 
