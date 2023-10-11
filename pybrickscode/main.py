@@ -124,20 +124,20 @@ def main():
     bot = Robot()
     trip_num = load_trip_num(bot)
     bot.hub.light.on(Color.RED)
-    prev_buttons = None
+    buttons = []
     while True:
         bot.hub.display.char(str(trip_num))
-        buttons = bot.hub.buttons.pressed()
+        new_buttons = bot.hub.buttons.pressed()
         # Button press will generate a stream of events.
-        # With the help of prev_buttons, only process the 1st event of such stream
-        if buttons and not prev_buttons:
+        # With the help of new_buttons, trigger by the trailing edge (last button press)
+        if buttons and not new_buttons:
             if Button.LEFT in buttons:
                 trip_num = left_button_event(bot, trip_num)
             elif Button.RIGHT in buttons:
                 trip_num = right_button_event(bot, trip_num)
             elif Button.BLUETOOTH in buttons:
                 run_trip(bot, trip_num)
-        prev_buttons = buttons
+        buttons = new_buttons
         wait(10)
 
 
