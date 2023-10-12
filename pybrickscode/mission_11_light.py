@@ -14,13 +14,14 @@ lift_target_angle = -30
 rotation_speed = 150
 lift_speed = 100
 straight_speed = 66
-
+deploy_distance = 170
 
 def backoff(bot: Robot):
     bot.left_motor.run_target(rotation_speed, deploy_angle * gear_ratio)
     bot.left_motor.run_target(rotation_speed, init_angle, wait=False)
-    while bot.right_color() != Color.BLUE:
-        bot.motor_pair.drive(-straight_speed, turn_rate=0)
+    bot.straight(-deploy_distance, straight_speed)
+    # while bot.right_color() != Color.BLUE:
+    #     bot.motor_pair.drive(-straight_speed, turn_rate=0)
     bot.stop()
     bot.left_motor.run_target(rotation_speed, init_angle)
 
@@ -59,7 +60,7 @@ def deploy(bot: Robot):
     bot.left_motor.reset_angle(0)
     deploy_speed = 300
     bot.left_motor.run_target(deploy_speed, deploy_angle * gear_ratio)
-    bot.straight(170)
+    bot.straight(deploy_distance)
 
 
 def run(bot: Robot):
