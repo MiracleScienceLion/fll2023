@@ -45,7 +45,7 @@ def trip_03_part_2(bot: Robot):
     m05_deploy = (1000, 120)
     m05_finishing = (880, 200)
     polygon(bot, vertices=[light_show_point, m05_deploy, m05_finishing])
-    polygon(bot, vertices=[m05_finishing, (890, 520), (600, 750), (280, 750)])
+    polygon(bot, vertices=[m05_finishing, (890, 570), (600, 750), (280, 750)])
 
 
 def run(bot: Robot):
