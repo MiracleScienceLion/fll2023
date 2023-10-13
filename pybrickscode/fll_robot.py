@@ -60,7 +60,11 @@ class Robot:
             right_sensor_port=Port.E,
 
             wheel_diameter=56.0,
-            axle_track=87.3125
+            axle_track=87.3125,
+            speed=None,
+            acceleration=None,
+            turn_rate=None,
+            turn_acceleration=None,
     ):
         self.left_wheel = Motor(left_wheel_port, Direction.COUNTERCLOCKWISE)
         self.right_wheel = Motor(right_wheel_port, Direction.CLOCKWISE)
@@ -78,6 +82,7 @@ class Robot:
         self.hub = PrimeHub()
         self.wait_for_stationary()
         self.hub.imu.reset_heading(0)
+        self.motor_pair.settings(straight_speed=speed, straight_acceleration=acceleration, turn_rate=turn_rate, turn_acceleration=turn_acceleration)
         # self.hub.speaker.beep()
         print('Robot Created!')
 
