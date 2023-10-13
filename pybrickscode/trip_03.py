@@ -33,7 +33,7 @@ def trip_03_part_1(bot: Robot):
     light_show_deploy = (650, light_show_y)
     polygon(bot, vertices=[pivot_point, light_show_deploy])
     # polygon(bot, vertices=[light_show_deploy, (660, light_show_y)], forward=False)
-    bot.turn(95)
+    bot.turn(92, turn_rate=66, turn_acceleration=100)
     # polygon(bot, vertices=[(600, light_show_y), (1000, light_show_y)], forward=False)
 
 
@@ -42,8 +42,8 @@ def trip_03_part_2(bot: Robot):
     light_show_point = (960, light_show_y)
     # polygon(bot, vertices=[(1125, light_show_y), light_show_point])
     run_light(bot)
-    m05_deploy = (1000, 130)
-    m05_finishing = (900, 200)
+    m05_deploy = (1000, 120)
+    m05_finishing = (880, 200)
     polygon(bot, vertices=[light_show_point, m05_deploy, m05_finishing])
     polygon(bot, vertices=[m05_finishing, (890, 520), (600, 750), (280, 750)])
 
