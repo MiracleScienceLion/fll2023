@@ -92,8 +92,9 @@ def get_human_segmentation(segmentation_processor, frame):
     # Convert background to a video
     foreground = pygame.surfarray.array3d(binary_mask_surface)
     video_frame = get_next_video_frame(background_video)
-    video_frame = pygame.transform.scale(pygame.surfarray.make_surface(video_frame), (WIDTH, HEIGHT))
-    background = pygame.surfarray.array3d(video_frame)
+    # Convert to Pygame surface and rotate by 270 degrees
+    video_frame = pygame.transform.rotate(pygame.surfarray.make_surface(video_frame), 270)  
+    background = pygame.surfarray.array3d(pygame.transform.scale(video_frame, (WIDTH, HEIGHT)))
     blended_image = np.where(foreground == [0, 0, 0], background, foreground)
     new_surface = pygame.surfarray.make_surface(blended_image)
 
