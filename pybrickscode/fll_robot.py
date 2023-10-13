@@ -4,6 +4,48 @@ from pybricks.pupdevices import Motor, ColorSensor
 from pybricks.robotics import GyroDriveBase
 from pybricks.tools import wait
 
+MIN_SPEED = 4
+MAX_SPEED = 977
+
+MIN_ACCELERATION = 24
+MAX_ACCELERATION = 9775
+
+MIN_TURN_RATE = 6
+MAX_TURN_RATE = 1282
+
+MIN_TURN_ACCELERATION = 32
+MAX_TURN_ACCELERATION = 12828
+
+
+def assert_speed(speed):
+    if speed is not None:
+        assert MIN_SPEED <= speed <= MAX_SPEED, f"Invalid speed, must between [{MIN_SPEED}, {MAX_SPEED}]"
+
+
+def assert_acceleration(acceleration):
+    if acceleration is not None:
+        if isinstance(acceleration, int):
+            assert MIN_ACCELERATION <= acceleration <= MAX_ACCELERATION, f"Invalid acceleration, must between [{MIN_ACCELERATION}, {MAX_ACCELERATION}]"
+        else:
+            acc, dec = acceleration
+            assert MIN_ACCELERATION <= acc <= MAX_ACCELERATION, f"Invalid acceleration, must between [{MIN_ACCELERATION}, {MAX_ACCELERATION}]"
+            assert MIN_ACCELERATION <= dec <= MAX_ACCELERATION, f"Invalid deceleration, must between [{MIN_ACCELERATION}, {MAX_ACCELERATION}]"
+
+
+def assert_turn_rate(turn_rate):
+    if turn_rate is not None:
+        assert MIN_TURN_RATE <= turn_rate <= MAX_TURN_RATE, f"Invalid turn_rate, must between [{MIN_TURN_RATE}, {MAX_TURN_RATE}]"
+
+
+def assert_turn_acceleration(turn_acceleration):
+    if turn_acceleration is not None:
+        if isinstance(turn_acceleration, int):
+            assert MIN_TURN_ACCELERATION <= turn_acceleration <= MAX_TURN_ACCELERATION, f"Invalid turn_acceleration, must between [{MIN_TURN_ACCELERATION}, {MAX_TURN_ACCELERATION}]"
+        else:
+            acc, dec = turn_acceleration
+            assert MIN_TURN_ACCELERATION <= acc <= MAX_TURN_ACCELERATION, f"Invalid turn_acceleration, must between [{MIN_TURN_ACCELERATION}, {MAX_TURN_ACCELERATION}]"
+            assert MIN_TURN_ACCELERATION <= dec <= MAX_TURN_ACCELERATION, f"Invalid turn_deceleration, must between [{MIN_TURN_ACCELERATION}, {MAX_TURN_ACCELERATION}]"
+
 
 class Robot:
     def __init__(
@@ -61,17 +103,49 @@ class Robot:
         self.right_wheel.brake()
 
     def straight(self, distance, speed=None, acceleration=None, then: Stop = Stop.HOLD, wait: bool = True):
+        """
+        :param distance:
+        :param speed: optional. if set, must be in the range [4, 977]
+        :param acceleration: optional. if set, must be in the range [24, 9775]
+        :param then: default Stop.HOLD
+        :param wait: default True
+        :return:
+        """
+        assert_speed(speed)
+        assert_acceleration(acceleration)
         settings = self.motor_pair.settings()
-        self.motor_pair.settings(straight_speed=speed, turn_acceleration=acceleration)
+        self.motor_pair.settings(straight_speed=speed, straight_acceleration=acceleration)
         # heading & timeout are not used
         self.motor_pair.straight(distance, then, wait)
         self.motor_pair.settings(*settings)
 
-    def turn(self, angle, then: Stop = Stop.HOLD, wait: bool = True) -> None:
+    def turn(self, angle, turn_rate=None, turn_acceleration=None, then: Stop = Stop.HOLD, wait: bool = True) -> None:
+        """
+        :param angle:
+        :param turn_rate: optional. if set, must be in the range [6, 1282]
+        :param turn_acceleration: optional. if set, must be in the range [32, 12828]
+        :param then: default Stop.HOLD
+        :param wait: default True
+        :return:
+        """
+        assert_turn_rate(turn_rate)
+        assert_turn_acceleration(turn_acceleration)
+        settings = self.motor_pair.settings()
+        self.motor_pair.settings(turn_rate=turn_rate, turn_acceleration=turn_acceleration)
+        # timeout are not used
         self.motor_pair.turn(angle, then, wait)
+        self.motor_pair.settings(*settings)
 
-    def curve(self, radius, angle, then: Stop = Stop.HOLD, wait: bool = True) -> None:
+    def curve(self, radius, angle, speed=None, acceleration=None, turn_rate=None, turn_acceleration=None, then: Stop = Stop.HOLD, wait: bool = True) -> None:
+        assert_speed(speed)
+        assert_acceleration(acceleration)
+        assert_turn_rate(turn_rate)
+        assert_turn_acceleration(turn_acceleration)
+        settings = self.motor_pair.settings()
+        self.motor_pair.settings(straight_speed=speed, straight_acceleration=acceleration, turn_rate=turn_rate, turn_acceleration=turn_acceleration)
+        # timeout are not used
         self.motor_pair.curve(radius, angle, then, wait)
+        self.motor_pair.settings(*settings)
 
     def drive(self, speed, turn_rate) -> None:
         self.motor_pair.drive(speed, turn_rate)
@@ -97,10 +171,10 @@ class Robot:
 
 def main():
     bot = Robot()
-    bot.curve(100, 60)
-    bot.curve(100, -60)
-    bot.curve(-100, -60)
-    bot.curve(-100, 60)
+    bot.curve(100, 60, turn_rate=100)
+    bot.curve(100, -60, acceleration=50)
+    bot.curve(-100, -60, speed=30)
+    bot.curve(-100, 60, turn_acceleration=32)
 
 
 if __name__ == "__main__":

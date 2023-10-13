@@ -94,7 +94,7 @@ def edge(distance, new_heading, heading):
     return maneuvers
 
 
-def polygon(robot: Robot, vertices, forward: bool = True, route_type='straight', reverse: bool = False, timeout=100):
+def polygon(robot: Robot, vertices, forward: bool = True, route_type='straight', reverse: bool = False, timeout=100, speed=None, acceleration=None, turn_rate=None, turn_acceleration=None):
     """
     Given a polygon (vertices), plan the trip and execute the plan to traverse the polygon edges in order.
     heading = the initial orientation of the robot used for determining the first maneuver.
@@ -105,6 +105,10 @@ def polygon(robot: Robot, vertices, forward: bool = True, route_type='straight',
     :param route_type: 'straight' straight-edged polygon, 'curve' smoothed arc to connect vertices
     :param reverse: if True, reverse course to undo all motions and retrack all the vertices back to the origin
     :param timeout: timeout after unexpected stalls
+    :param speed: linear speed (mm/s)
+    :param acceleration: linear acceleration (mm/s^2)
+    :param turn_rate: angular speed (deg/s)
+    :param turn_acceleration: angular acceleration (deg/s^2)
     """
 
     def execute(maneuvers):
@@ -112,11 +116,11 @@ def polygon(robot: Robot, vertices, forward: bool = True, route_type='straight',
             if debug:
                 print(m, param)
             if m == 'turn':
-                robot.turn(param)
+                robot.turn(param, turn_rate=turn_rate, turn_acceleration=turn_acceleration)
             elif m == 'straight':
-                robot.straight(param)
+                robot.straight(param, speed=speed, acceleration=acceleration)
             elif m == 'curve':
-                robot.curve(*param)
+                robot.curve(*param, speed=speed, acceleration=acceleration, turn_rate=turn_rate, turn_acceleration=turn_acceleration)
             # else: do nothing
 
     heading = robot.heading()
@@ -200,9 +204,42 @@ if __name__ == "__main__":
         polygon(robot, [(300, 0), (300, 450), (300, 900), (300, 1350)], route_type='curve')
 
 
+    def speed_test():
+        robot.reset_heading(0)
+        polygon(robot, [(0, 0), (100, 0)], speed=50, acceleration=30)
+        polygon(robot, [(100, 0), (0, 0)], speed=500, acceleration=1000, forward=False)
+
+
+    def turn_test():
+        robot.reset_heading(0)
+        polygon(robot, [(0, 0), (0, 1)], turn_rate=50, turn_acceleration=40)
+        polygon(robot, [(0, 1), (1, 1)], turn_rate=500, turn_acceleration=1000)
+
+
+    def null_speed_test():
+        robot.reset_heading(0)
+        polygon(robot, [(0, 0), (100, 0)], speed=None, acceleration=None)
+        polygon(robot, [(100, 0), (0, 0)], speed=None, acceleration=None, forward=False)
+
+
+    def null_turn_rate_test():
+        robot.reset_heading(0)
+        polygon(robot, [(0, 0), (0, 1)], turn_rate=None, turn_acceleration=None)
+        polygon(robot, [(0, 1), (1, 1)], turn_rate=None, turn_acceleration=None)
+
+    def arcs_speed_test(heading):
+        robot.reset_heading(heading)
+        polygon(robot, [(0, 0), (100, 100)], route_type='curve', reverse=True, turn_rate=200, speed=250, acceleration=50, turn_acceleration=50)
+
+
     # tests()
     # roundtrip()
     # undotrip()
     # arcs(0)
     # circle()
-    sway()
+    # sway()
+    # null_speed_test()
+    # null_turn_rate_test()
+    # speed_test()
+    # turn_test()
+    arcs_speed_test(0)
