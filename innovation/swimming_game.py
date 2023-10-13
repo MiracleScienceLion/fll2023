@@ -14,7 +14,7 @@ RED = (255, 0, 0)
 BLUE = (27, 161, 226)  # Blue color that's close to swimming pool
 
 circle_radius = 50
-
+#Position
 fish_x = 0
 fish_y = 500
 turtle_x = 250
@@ -22,9 +22,12 @@ turtle_y = 250
 star_x = 500
 star_y = 0
 
-
 ################################################################
 # Utilities
+def display_score():
+    score_display = score_font.render(f"Score: {score}", True, RED)
+    window.blit(score_display, (20, 20))
+    
 def draw_object(image):
     image_surface = pygame.image.load(image).convert_alpha()
     resized_image_surface = pygame.transform.scale(image_surface, (150, 100))
@@ -160,6 +163,11 @@ class AnimatedSprite(pygame.sprite.Sprite):
 #########################################################
 # Initialization
 pygame.init()
+#game score: fish: 15/sea star: 10/sea turtle: 20
+score = 0
+SCORE_FONT_SIZE = 32
+pygame.font.init()
+score_font = pygame.font.SysFont(None, SCORE_FONT_SIZE)
 pygame.mixer.init()
 bubble_sound = pygame.mixer.Sound('img/archivo.mp3')
 # image list
@@ -216,14 +224,17 @@ while True:
         #pygame.time.wait(int(bubble_sound.get_length() * 500))
 
         if collision_fish:
+            score += 15
             animation_group.add(AnimatedSprite('RED', fish_x + fish_width/2, fish_y + fish_height/2))
             fish_x, fish_y = random_reposition_target(fish_mask, binary_mask, fish_width, fish_height)
 
         if collision_turtle:
+            score += 20
             animation_group.add(AnimatedSprite('GREEN', turtle_x + turtle_width/2, turtle_y + turtle_height/2))
             turtle_x, turtle_y = random_reposition_target(turtle_mask, binary_mask, turtle_width, turtle_height)
 
         if (collision_star):
+            score += 10
             animation_group.add(AnimatedSprite('YELLOW', star_x + star_width/2, star_y + star_height/2))
             star_x, star_y = random_reposition_target(star_mask, binary_mask, star_width, star_height)
 
@@ -232,6 +243,8 @@ while True:
     window.blit(turtle_surface, (turtle_x, turtle_y))
     window.blit(fish_surface, (fish_x, fish_y))
     window.blit(star_surface, (star_x, star_y))
+
+    display_score()
 
     animation_group.draw(window)
     animation_group.update()
