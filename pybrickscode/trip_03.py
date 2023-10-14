@@ -13,7 +13,7 @@ def trip_03_part_1(bot: Robot):
     back_point = (590, -590)
     pivot_point = (680, -570)
     pivot_point_r = (500, -620)
-    polygon(bot, vertices=[(20, -900), (790, -670), skate_park])
+    polygon(bot, vertices=[(20, -900), (790, -670), skate_park], turn_rate=100, turn_acceleration=200)
     polygon(bot, vertices=[skate_park, front_point], forward=False, route_type='curve')
     deploy(bot, wait=True)
     # 1
@@ -45,7 +45,7 @@ def trip_03_part_2(bot: Robot):
     m05_deploy = (1000, 120)
     m05_finishing = (880, 200)
     polygon(bot, vertices=[light_show_point, m05_deploy, m05_finishing])
-    polygon(bot, vertices=[m05_finishing, (890, 570), (600, 750), (280, 750)])
+    polygon(bot, vertices=[m05_finishing, (890, 570), (600, 750), (280, 750)], speed=976)
 
 
 def run(bot: Robot):
@@ -56,3 +56,4 @@ def run(bot: Robot):
 if __name__ == "__main__":
     bot = Robot()
     run(bot)
+
