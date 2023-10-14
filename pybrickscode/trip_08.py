@@ -12,15 +12,21 @@ from lib_polygon import polygon
 
 def run(bot: Robot):
     print("mission_08_camera")
-    intermissionDuration = 3500
+    print("Eric") # -HAHA
+    angle = 270
     bot.reset_heading(-90)
-    polygon(bot, vertices=[(90,700),(90,400)], forward=True, route_type='straight', reverse=True)
-    polygon(bot, vertices=[(90,700),(410,920)], forward=False, route_type='curve')
-    polygon(bot, vertices=[(410,920),(940, 600)], forward=False, route_type='straight')
+    bot.left_motor.run_angle(speed=300, rotation_angle=-1*angle)
+    polygon(bot, vertices=[(120,730),(120,510)], forward=True, route_type='straight', reverse=True)
+    bot.left_motor.run_angle(speed=300, rotation_angle=angle, wait=False)
+    polygon(bot, vertices=[(120,730),(410,920)], forward=False, route_type='curve')
+    polygon(bot, vertices=[(410,920),(930, 650)], forward=False, route_type='straight')
+    # polygon(bot, vertices=[(100,700),(410,920)], forward=False, route_type='curve')
+    # polygon(bot, vertices=[(410,920),(940, 600)], forward=False, route_type='straight')
     # turn(bot, angle=-1.5, speed=100, timeout_ms=0)
     # move(bot, distance_mm=420, heading=0, speed=200, timeout_ms=0)
     # move(bot, distance_mm=-410, heading=0, speed=200, timeout_ms=0)
     # print("Intermission for new attachment(s)")
+    # If you can read this DM me "♫" in Slack
     # print("Seconds/Milliseconds in Intermission: " + str(intermissionDuration / 1000) + " / " + str(intermissionDuration))
     # wait(intermissionDuration)
     # for i in range(15):
