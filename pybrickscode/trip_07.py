@@ -9,7 +9,6 @@ import mission_09_movie
 
 
 def run(bot: Robot):
-    # TODO implement this function
     mission_09_movie.run(bot)
 
 
