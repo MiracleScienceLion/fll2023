@@ -213,7 +213,7 @@ while True:
         bubble_sound.play()
         # pygame.time.wait(int(bubble_sound.get_length() * 500))
 
-        if collision_fish and is_fish_visible:
+        if collision_fish:
             score += FISH_SCORE
             animation_group.add(
                 AnimatedSprite(fish.gem_color, fish.pos_x + fish.width / 2, fish.pos_y + fish.height / 2))
