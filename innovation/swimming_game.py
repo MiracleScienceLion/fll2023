@@ -194,7 +194,7 @@ selfie_segmentation_processor = mp_selfie_segmentation.SelfieSegmentation(model_
 
 #################################################################
 # Main
-# Wait for animation to finish before re-drawing the object
+# Flag to decide whether to draw the object. If invisible, no need to detect collision.
 is_fish_visible = is_turtle_visible = is_star_visible = True
 
 while True:
@@ -239,6 +239,7 @@ while True:
 
     is_fish_visible = is_turtle_visible = is_star_visible = True
 
+    # Do not draw the object if the corresponding collision animation is playing
     for sprite in animation_group:
         if sprite.gem_color == fish.gem_color and sprite.is_active:
             is_fish_visible = False
