@@ -27,7 +27,8 @@ star_width, star_height = 120, 100
 anima_gem_resources = {
     'GREEN': f"img/green_gem2/",
     'YELLOW': f"img/yellow_gem6/",
-    'RED': f"img/red_gem3/"
+    'RED': f"img/red_gem3/",
+    'STARBURST': f"img/starburst/burst"
 }
 
 
@@ -218,18 +219,24 @@ while True:
             animation_group.add(
                 AnimatedSprite(fish.gem_color, fish.pos_x + fish.width / 2, fish.pos_y + fish.height / 2))
             fish.random_reposition_target(binary_mask)
+            animation_group.add(
+                AnimatedSprite('STARBURST', fish.pos_x + fish.width / 2, fish.pos_y + fish.height / 2))
 
         if collision_turtle:
             score += TURTLE_SCORE
             animation_group.add(
                 AnimatedSprite(turtle.gem_color, turtle.pos_x + turtle.width / 2, turtle.pos_y + turtle.height / 2))
             turtle.random_reposition_target(binary_mask)
+            animation_group.add(
+                AnimatedSprite('STARBURST', turtle.pos_x + turtle.width / 2, turtle.pos_y + turtle.height / 2))
 
         if collision_star:
             score += STAR_SCORE
             animation_group.add(
                 AnimatedSprite(star.gem_color, star.pos_x + star.width / 2, star.pos_y + star.height / 2))
             star.random_reposition_target(binary_mask)
+            animation_group.add(
+                AnimatedSprite('STARBURST', star.pos_x + star.width / 2, star.pos_y + star.height / 2))
 
     # Blit the segmented mask and the circle
     window.blit(binary_mask_surface, (0, 0))
