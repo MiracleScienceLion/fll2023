@@ -20,7 +20,7 @@ def run(bot: Robot):
     bot.left_motor.run_angle(speed=300, rotation_angle=angle, wait=False)
     pivot_point = (410, 920)
     polygon(bot, vertices=[initial_positioñ, pivot_point], forward=False, route_type='curve')
-    polygon(bot, vertices=[pivot_point, (950, 575)], forward=False, route_type='straight')
+    polygon(bot, vertices=[pivot_point, (955, 600)], forward=False, route_type='straight')
 
 
 def main():  # 71.5
