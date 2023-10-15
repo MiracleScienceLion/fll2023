@@ -28,7 +28,8 @@ anima_gem_resources = {
     'GREEN': f"img/green_gem2/",
     'YELLOW': f"img/yellow_gem6/",
     'RED': f"img/red_gem3/",
-    'STARBURST': f"img/starburst/burst"
+    'STARBURST': f"img/starburst/burst",
+    'SPARKLE': f"img/Violet/0001.png"
 }
 
 
@@ -125,7 +126,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, gem_color, x, y):
         super().__init__()
 
-        frame_files = [anima_gem_resources[gem_color] + f"{i:04}.png" for i in range(1, 61) if i % 2 != 0]
+        frame_files = [anima_gem_resources[gem_color] + f"{i:04}.png" for i in range(1, 36)]
 
         self.gem_color = gem_color
         self.frames = [pygame.image.load(f) for f in frame_files]
@@ -134,7 +135,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.frame_duration = 1
-        self.animation_duration = 1500
+        self.animation_duration = 2000
         self.last_update = pygame.time.get_ticks()
         self.initial_update = self.last_update
         self.is_active = False
@@ -220,7 +221,7 @@ while True:
                 AnimatedSprite(fish.gem_color, fish.pos_x + fish.width / 2, fish.pos_y + fish.height / 2))
             fish.random_reposition_target(binary_mask)
             animation_group.add(
-                AnimatedSprite('STARBURST', fish.pos_x + fish.width / 2, fish.pos_y + fish.height / 2))
+                AnimatedSprite('SPARKLE', fish.pos_x + fish.width / 2, fish.pos_y + fish.height / 2))
 
         if collision_turtle:
             score += TURTLE_SCORE
@@ -228,7 +229,7 @@ while True:
                 AnimatedSprite(turtle.gem_color, turtle.pos_x + turtle.width / 2, turtle.pos_y + turtle.height / 2))
             turtle.random_reposition_target(binary_mask)
             animation_group.add(
-                AnimatedSprite('STARBURST', turtle.pos_x + turtle.width / 2, turtle.pos_y + turtle.height / 2))
+                AnimatedSprite('SPARKLE', turtle.pos_x + turtle.width / 2, turtle.pos_y + turtle.height / 2))
 
         if collision_star:
             score += STAR_SCORE
@@ -236,7 +237,7 @@ while True:
                 AnimatedSprite(star.gem_color, star.pos_x + star.width / 2, star.pos_y + star.height / 2))
             star.random_reposition_target(binary_mask)
             animation_group.add(
-                AnimatedSprite('STARBURST', star.pos_x + star.width / 2, star.pos_y + star.height / 2))
+                AnimatedSprite('SPARKLE', star.pos_x + star.width / 2, star.pos_y + star.height / 2))
 
     # Blit the segmented mask and the circle
     window.blit(binary_mask_surface, (0, 0))
