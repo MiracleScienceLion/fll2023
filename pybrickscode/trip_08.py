@@ -19,7 +19,7 @@ def run(bot: Robot):
     polygon(bot, vertices=[(120,730),(120,510)], forward=True, route_type='straight', reverse=True)
     bot.left_motor.run_angle(speed=300, rotation_angle=angle, wait=False)
     polygon(bot, vertices=[(120,730),(410,920)], forward=False, route_type='curve')
-    polygon(bot, vertices=[(410,920),(930, 650)], forward=False, route_type='straight')
+    polygon(bot, vertices=[(410,920),(965, 565)], forward=False, route_type='straight')
     # polygon(bot, vertices=[(100,700),(410,920)], forward=False, route_type='curve')
     # polygon(bot, vertices=[(410,920),(940, 600)], forward=False, route_type='straight')
     # turn(bot, angle=-1.5, speed=100, timeout_ms=0)
