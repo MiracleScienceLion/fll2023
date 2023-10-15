@@ -8,7 +8,7 @@ load_gear = 36
 gear_ratio = load_gear / motor_gear
 
 init_angle = 0
-deploy_angle = -130
+deploy_angle = -125
 lift_target_angle = -30
 
 rotation_speed = 150
@@ -62,12 +62,10 @@ def deploy(bot: Robot):
     bot.left_motor.run_target(deploy_speed, deploy_angle * gear_ratio)
     bot.straight(deploy_distance)
 
-
 def run(bot: Robot):
     deploy(bot)
     lift(bot)
     backoff(bot)
-
 
 if __name__ == "__main__":
     bot = Robot()
@@ -75,3 +73,4 @@ if __name__ == "__main__":
     #     pulse(bot.left_motor)
 
     run(bot)
+

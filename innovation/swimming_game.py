@@ -7,68 +7,36 @@ import mediapipe as mp
 
 ################################################################
 # Parameters
-
-# Colors
-WHITE = (255, 255, 255)
 RED = (255, 0, 0)
-BLUE = (27, 161, 226)  # Blue color that's close to swimming pool
+SCORE_FONT_SIZE = 32
+FISH_SCORE = 15
+TURTLE_SCORE = 20
+STAR_SCORE = 10
 
-circle_radius = 50
-#Position
+# Position
 fish_x = 0
 fish_y = 500
+fish_width, fish_height = 150, 100
 turtle_x = 250
 turtle_y = 250
+turtle_width, turtle_height = 160, 240
 star_x = 500
 star_y = 0
+star_width, star_height = 120, 100
+
+anima_gem_resources = {
+    'GREEN': f"img/green_gem2/",
+    'YELLOW': f"img/yellow_gem6/",
+    'RED': f"img/red_gem3/",
+    'STARBURST': f"img/starburst/burst"
+}
+
 
 ################################################################
 # Utilities
 def display_score():
     score_display = score_font.render(f"Score: {score}", True, RED)
     window.blit(score_display, (20, 20))
-    
-def draw_object(image):
-    image_surface = pygame.image.load(image).convert_alpha()
-    resized_image_surface = pygame.transform.scale(image_surface, (150, 100))
-
-    # Create a bitmask from the surface
-    image_bitmask = pygame.mask.from_surface(resized_image_surface)
-
-    return resized_image_surface, image_bitmask, 150, 100
-
-
-def draw_fish():
-    # create a surface for loading image and resize 
-    image_surface = pygame.image.load('img/nemo.png').convert_alpha()
-    resized_image_surface = pygame.transform.scale(image_surface, (150, 100))
-
-    # Create a bitmask from the surface
-    image_bitmask = pygame.mask.from_surface(resized_image_surface)
-
-    return resized_image_surface, image_bitmask, 150, 100
-
-
-# Draw the target object, return the corresponding surface and bitmask
-def draw_circle():
-    # Create a surface and draw a red circle on it
-    circle_surface = pygame.Surface((circle_radius * 2, circle_radius * 2), pygame.SRCALPHA)
-    pygame.draw.circle(circle_surface, RED, (circle_radius, circle_radius), circle_radius)
-
-    # Create a bitmask from the surface
-    circle_bitmask = pygame.mask.from_surface(circle_surface)
-
-    return circle_surface, circle_bitmask, circle_radius * 2, circle_radius * 2
-
-
-# Detects if the two bitmasks are overlapping
-def overlap(mask1: pygame.Mask, mask2, offset_x, offset_y):
-    for x in range(mask1.get_size()[0]):
-        for y in range(mask1.get_size()[1]):
-            if mask1.get_at((x, y)) and mask2[y + offset_y][x + offset_x]:
-                return x, y
-
-    return None
 
 
 # Capture the frame and return the RGB color space image
@@ -96,24 +64,12 @@ def get_human_segmentation(segmentation_processor, frame):
     foreground = pygame.surfarray.array3d(binary_mask_surface)
     video_frame = get_next_video_frame(background_video)
     # Convert to Pygame surface and rotate by 270 degrees
-    video_frame = pygame.transform.rotate(pygame.surfarray.make_surface(video_frame), 270)  
+    video_frame = pygame.transform.rotate(pygame.surfarray.make_surface(video_frame), 270)
     background = pygame.surfarray.array3d(pygame.transform.scale(video_frame, (WIDTH, HEIGHT)))
     blended_image = np.where(foreground == [0, 0, 0], background, foreground)
     new_surface = pygame.surfarray.make_surface(blended_image)
 
     return new_surface, binary_mask
-
-
-def random_reposition_target(mask1: pygame.Mask, mask2, width, height):
-
-    new_pos_x, new_pos_y = 0, 0
-    for trial in range (0, 10):
-        offset_x, offset_y = random.randint(0, WIDTH - width - 1), random.randint(0, HEIGHT - height - 1)
-        is_overlap = overlap(mask1, mask2, offset_x, offset_y)
-        if not is_overlap:
-            return offset_x, offset_y
-
-    return offset_x, offset_y
 
 
 def get_next_video_frame(video):
@@ -127,30 +83,64 @@ def get_next_video_frame(video):
     return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
 
+class TargetObject:
+    def __init__(self, file_name, gem_color, width, height, pos_x, pos_y):
+        image_surface = pygame.image.load(file_name).convert_alpha()
+        self.gem_color = gem_color
+        self.width = width
+        self.height = height
+        self.surface = pygame.transform.scale(image_surface, (width, height))
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+
+        # Create a bitmask from the surface
+        self.bitmask = pygame.mask.from_surface(self.surface)
+
+    # Detects if the two bitmasks are overlapping
+    def overlap(self, mask, offset_x=None, offset_y=None):
+        offset_x = offset_x if offset_x is not None else self.pos_x
+        offset_y = offset_y if offset_y is not None else self.pos_y
+
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.bitmask.get_at((x, y)) and mask[y + offset_y][x + offset_x]:
+                    return x, y
+
+        return None
+
+    def random_reposition_target(self, mask):
+
+        for trial in range(0, 10):
+            offset_x = random.randint(0, len(mask[0]) - self.width - 1)
+            offset_y = random.randint(0, len(mask) - self.height - 1)
+            is_overlap = self.overlap(mask, offset_x, offset_y)
+            if not is_overlap:
+                self.pos_x, self.pos_y = offset_x, offset_y
+                return
+
+        self.pos_x, self.pos_y = offset_x, offset_y
+
+
 class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, gem_color, x, y):
         super().__init__()
 
-        if gem_color == 'GREEN':
-            frame_files = [f"img/green_gem2/{i:04}.png" for i in range(1, 61) if i % 2 != 0]
-        elif gem_color == 'YELLOW':
-            frame_files = [f"img/yellow_gem6/{i:04}.png" for i in range(1, 61) if i % 2 != 0]
-        elif gem_color == 'RED':
-            frame_files = [f"img/red_gem3/{i:04}.png" for i in range(1, 61) if i % 2 != 0]
-        else:
-            frame_files = None
+        frame_files = [anima_gem_resources[gem_color] + f"{i:04}.png" for i in range(1, 61) if i % 2 != 0]
 
+        self.gem_color = gem_color
         self.frames = [pygame.image.load(f) for f in frame_files]
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.frame_duration = 1
-        self.animation_duration = 2000
+        self.animation_duration = 1500
         self.last_update = pygame.time.get_ticks()
         self.initial_update = self.last_update
+        self.is_active = False
 
     def update(self):
+        self.is_active = True
         now = pygame.time.get_ticks()
         if now - self.last_update > self.frame_duration:
             self.last_update = now
@@ -158,25 +148,23 @@ class AnimatedSprite(pygame.sprite.Sprite):
             self.image = self.frames[self.current_frame]
 
         # if the animation is complete, reset animation index
-        if self.current_frame >= len(self.frames) - 1 and now - self.initial_update > self.animation_duration:
+        if self.current_frame >= len(self.frames) - 1 or now - self.initial_update > self.animation_duration:
+            self.is_active = False
             self.kill()
+
+
 #########################################################
 # Initialization
 pygame.init()
-#game score: fish: 15/sea star: 10/sea turtle: 20
+# game score: fish: 15/sea star: 10/sea turtle: 20
 score = 0
-SCORE_FONT_SIZE = 32
 pygame.font.init()
 score_font = pygame.font.SysFont(None, SCORE_FONT_SIZE)
 pygame.mixer.init()
 bubble_sound = pygame.mixer.Sound('img/archivo.mp3')
-# image list
-nemo_image = 'img/nemo.png'
-star_image = 'img/star.png'
-turtle_image = 'img/turtle.png'
-background_video_path = 'img/tank floor.mp4'
+
 # Open the background video using OpenCV
-background_video = cv2.VideoCapture(background_video_path)
+background_video = cv2.VideoCapture('img/tank floor.mp4')
 if not background_video.isOpened():
     print("Could not open the background video.")
     sys.exit()
@@ -195,9 +183,10 @@ animation_group = pygame.sprite.Group()
 # Draw the target object on a surface.
 # Only do it in initialization because the object is not constantly changing in shape.
 # Otherwise, need to be put in while loop
-fish_surface, fish_mask, fish_width, fish_height = draw_object(nemo_image)
-turtle_surface, turtle_mask, turtle_width, turtle_height = draw_object(turtle_image)
-star_surface, star_mask, star_width, star_height = draw_object(star_image)
+fish = TargetObject('img/nemo.png', 'RED', fish_width, fish_height, fish_x, fish_y)
+turtle = TargetObject('img/turtle.png', 'GREEN', turtle_width, turtle_height, turtle_x, turtle_y)
+star = TargetObject('img/star.png', 'YELLOW', star_width, star_height, star_x, star_y)
+
 clock = pygame.time.Clock()
 
 # Initialize selfie segmentation
@@ -206,6 +195,8 @@ selfie_segmentation_processor = mp_selfie_segmentation.SelfieSegmentation(model_
 
 #################################################################
 # Main
+# Flag to decide whether to draw the object. If invisible, no need to detect collision.
+is_fish_visible = is_turtle_visible = is_star_visible = True
 
 while True:
     frame = capture_frame(cap)
@@ -215,39 +206,67 @@ while True:
 
     binary_mask_surface, binary_mask = get_human_segmentation(selfie_segmentation_processor, frame)
 
-    collision_fish = overlap(fish_mask, binary_mask, fish_x, fish_y)
-    collision_turtle = overlap(turtle_mask, binary_mask, turtle_x, turtle_y)
-    collision_star = overlap(star_mask, binary_mask, star_x, star_y)
+    collision_fish = None if not is_fish_visible else fish.overlap(binary_mask)
+    collision_turtle = None if not is_turtle_visible else turtle.overlap(binary_mask)
+    collision_star = None if not is_star_visible else star.overlap(binary_mask)
 
     if collision_fish or collision_turtle or collision_star:
         bubble_sound.play()
-        #pygame.time.wait(int(bubble_sound.get_length() * 500))
+        # pygame.time.wait(int(bubble_sound.get_length() * 500))
 
         if collision_fish:
-            score += 15
-            animation_group.add(AnimatedSprite('RED', fish_x + fish_width/2, fish_y + fish_height/2))
-            fish_x, fish_y = random_reposition_target(fish_mask, binary_mask, fish_width, fish_height)
+            score += FISH_SCORE
+            animation_group.add(
+                AnimatedSprite(fish.gem_color, fish.pos_x + fish.width / 2, fish.pos_y + fish.height / 2))
+            fish.random_reposition_target(binary_mask)
+            animation_group.add(
+                AnimatedSprite('STARBURST', fish.pos_x + fish.width / 2, fish.pos_y + fish.height / 2))
 
         if collision_turtle:
-            score += 20
-            animation_group.add(AnimatedSprite('GREEN', turtle_x + turtle_width/2, turtle_y + turtle_height/2))
-            turtle_x, turtle_y = random_reposition_target(turtle_mask, binary_mask, turtle_width, turtle_height)
+            score += TURTLE_SCORE
+            animation_group.add(
+                AnimatedSprite(turtle.gem_color, turtle.pos_x + turtle.width / 2, turtle.pos_y + turtle.height / 2))
+            turtle.random_reposition_target(binary_mask)
+            animation_group.add(
+                AnimatedSprite('STARBURST', turtle.pos_x + turtle.width / 2, turtle.pos_y + turtle.height / 2))
 
-        if (collision_star):
-            score += 10
-            animation_group.add(AnimatedSprite('YELLOW', star_x + star_width/2, star_y + star_height/2))
-            star_x, star_y = random_reposition_target(star_mask, binary_mask, star_width, star_height)
+        if collision_star:
+            score += STAR_SCORE
+            animation_group.add(
+                AnimatedSprite(star.gem_color, star.pos_x + star.width / 2, star.pos_y + star.height / 2))
+            star.random_reposition_target(binary_mask)
+            animation_group.add(
+                AnimatedSprite('STARBURST', star.pos_x + star.width / 2, star.pos_y + star.height / 2))
 
     # Blit the segmented mask and the circle
     window.blit(binary_mask_surface, (0, 0))
-    window.blit(turtle_surface, (turtle_x, turtle_y))
-    window.blit(fish_surface, (fish_x, fish_y))
-    window.blit(star_surface, (star_x, star_y))
-
-    display_score()
 
     animation_group.draw(window)
     animation_group.update()
+
+    is_fish_visible = is_turtle_visible = is_star_visible = True
+
+    # Do not draw the object if the corresponding collision animation is playing
+    for sprite in animation_group:
+        if sprite.gem_color == fish.gem_color and sprite.is_active:
+            is_fish_visible = False
+
+        if sprite.gem_color == turtle.gem_color and sprite.is_active:
+            is_turtle_visible = False
+
+        if sprite.gem_color == star.gem_color and sprite.is_active:
+            is_star_visible = False
+
+    if is_fish_visible:
+        window.blit(fish.surface, (fish.pos_x, fish.pos_y))
+
+    if is_turtle_visible:
+        window.blit(turtle.surface, (turtle.pos_x, turtle.pos_y))
+
+    if is_star_visible:
+        window.blit(star.surface, (star.pos_x, star.pos_y))
+
+    display_score()
 
     pygame.display.update()
 
@@ -256,7 +275,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-    #clock.tick(20)
+    # clock.tick(20)
 
 background_video.release()
 cap.release()
