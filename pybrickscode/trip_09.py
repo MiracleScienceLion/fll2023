@@ -13,7 +13,7 @@ from lib_polygon import polygon
 hub = InventorHub()
 
 def run(bot: Robot):
-    print("trip_09_ming-yi")
+    print("trip_09")
     bot.reset_heading(0)
     polygon(bot, [(0, 0), (700, 600),(700,1250),(850,1250)], reverse=False)
     
