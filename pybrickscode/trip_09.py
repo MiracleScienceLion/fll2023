@@ -1,3 +1,5 @@
+#This is the code that picks up the expert next to the sound mixer (Noah, I think), and drops him off to the music note section.
+
 from pybricks.hubs import InventorHub
 from pybricks.pupdevices import Motor, ColorSensor, UltrasonicSensor
 from pybricks.parameters import Button, Color, Direction, Port, Side, Stop
