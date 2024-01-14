@@ -17,7 +17,7 @@ hub = InventorHub()
 def run(bot: Robot):
     print("trip_09")
     bot.reset_heading(0)
-    polygon(bot, [(0, 0), (700, 600),(700,1250),(850,1250)], reverse=False)
+    polygon(bot, [(0, 0), (700, 600),(700,1320),(870,1320)], reverse=False,speed=800)
     
 
 def main():
